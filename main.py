@@ -12,8 +12,9 @@ from PIL import Image, ImageGrab
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Set
 import queue
+from collections import deque
 
 @dataclass
 class Template:
@@ -29,23 +30,24 @@ class Template:
 class Mouse:
     """Classe pour gérer les mouvements naturels de la souris"""
     def __init__(self):
-        self.move_speed = 0.1
+        # Vitesse augmentée pour des mouvements plus rapides
+        self.move_speed = 0.001  # Beaucoup plus rapide
+        self.use_acceleration = True
         pyautogui.FAILSAFE = True
+        pyautogui.MINIMUM_DURATION = 0  # Désactiver la durée minimale
+        pyautogui.PAUSE = 0  # Pas de pause automatique
     
-    def bezier_curve(self, start, end, control1=None, control2=None, steps=50):
-        """Génère une courbe de Bézier pour un mouvement plus naturel"""
+    def bezier_curve(self, start, end, control1=None, control2=None, steps=3):
+        """Génère une courbe de Bézier simplifiée pour mouvement rapide"""
         if control1 is None:
-            # Points de contrôle aléatoires pour courbe naturelle
+            # Réduire la courbure pour des mouvements plus directs
             mid_x = (start[0] + end[0]) / 2
             mid_y = (start[1] + end[1]) / 2
             control1 = (
-                mid_x + random.randint(-50, 50),
-                mid_y + random.randint(-50, 50)
+                mid_x + random.randint(-20, 20),
+                mid_y + random.randint(-20, 20)
             )
-            control2 = (
-                mid_x + random.randint(-30, 30),
-                mid_y + random.randint(-30, 30)
-            )
+            control2 = control1  # Un seul point de contrôle pour simplicité
         
         points = []
         for t in np.linspace(0, 1, steps):
@@ -56,73 +58,65 @@ class Mouse:
             points.append((int(x), int(y)))
         return points
     
-    def move_to(self, x, y, use_bezier=True):
-        """Déplacer vers une position avec mouvement naturel"""
+    def move_to(self, x, y, use_bezier=True, speed_multiplier=1.0):
+        """Déplacer vers une position avec mouvement rapide et fluide"""
         current_x, current_y = pyautogui.position()
         
-        # Ajouter une légère imprécision à la cible
-        x += random.randint(-2, 2)
-        y += random.randint(-2, 2)
+        # Petite imprécision pour l'aspect humain
+        x += random.randint(-1, 1)
+        y += random.randint(-1, 1)
         
-        if use_bezier:
-            # Utiliser courbe de Bézier pour mouvement naturel
+        distance = math.sqrt((x - current_x)**2 + (y - current_y)**2)
+        
+        if distance < 50:  # Mouvement très court - direct
+            pyautogui.moveTo(x, y, duration=0)
+        elif use_bezier and distance > 100:
+            # Utiliser Bézier seulement pour les longues distances
             points = self.bezier_curve((current_x, current_y), (x, y))
-            for point in points:
+            for point in points[:-1]:  # Sauter le dernier point
                 pyautogui.moveTo(point[0], point[1], duration=0)
-                time.sleep(random.uniform(0.001, 0.003))
+                time.sleep(0.001 * speed_multiplier)  # Très court délai
+            pyautogui.moveTo(x, y, duration=0)  # Point final précis
         else:
-            # Mouvement standard avec point intermédiaire
-            delta_x = x - current_x
-            delta_y = y - current_y
-            distance = math.sqrt(delta_x * delta_x + delta_y * delta_y)
-            
-            if distance > 100:
-                rand_x = random.randint(-15, 15)
-                rand_y = random.randint(-15, 15)
-                mid_x = current_x + (delta_x * 0.6) + rand_x
-                mid_y = current_y + (delta_y * 0.6) + rand_y
-                pyautogui.moveTo(mid_x, mid_y, duration=self.move_speed)
-                self.random_pause(0.03, 0.1)
-            
-            pyautogui.moveTo(x, y, duration=self.move_speed)
+            # Mouvement direct avec accélération
+            # Calculer une durée basée sur la distance (max 0.2 secondes)
+            duration = min(0.2, distance / 5000) * speed_multiplier
+            pyautogui.moveTo(x, y, duration=duration)
         
-        self.random_pause(0.05, 0.15)
+        # Micro-pause après mouvement
+        time.sleep(random.uniform(0.01, 0.03) * speed_multiplier)
     
     def click(self, x, y):
-        """Clic simple avec temps de maintien variable"""
-        self.move_to(x, y)
-        pyautogui.mouseDown()
-        self.random_pause(0.05, 0.15)  # Temps de maintien variable
-        pyautogui.mouseUp()
-        self.random_pause(0.1, 0.3)
+        """Clic simple et rapide"""
+        self.move_to(x, y, speed_multiplier=0.5)  # Mouvement encore plus rapide
+        pyautogui.click()
+        time.sleep(random.uniform(0.05, 0.1))
     
     def shift_click(self, x, y):
-        """Clic avec Shift"""
-        self.move_to(x, y)
-        pyautogui.keyDown('shift')
-        time.sleep(random.uniform(0.02, 0.05))
-        pyautogui.mouseDown()
-        self.random_pause(0.05, 0.15)
-        pyautogui.mouseUp()
-        time.sleep(random.uniform(0.02, 0.05))
-        pyautogui.keyUp('shift')
-        self.random_pause(0.1, 0.3)
+        """Clic avec Shift - optimisé pour rapidité"""
+        self.move_to(x, y, speed_multiplier=0.5)
+        # Vérifier si Shift est déjà pressé
+        if not keyboard.is_pressed('shift'):
+            pyautogui.keyDown('shift')
+            time.sleep(0.01)
+        pyautogui.click()
+        time.sleep(random.uniform(0.05, 0.1))
     
     def random_pause(self, min_time, max_time):
-        """Pause aléatoire avec distribution gaussienne"""
-        mean = (min_time + max_time) / 2
-        std = (max_time - min_time) / 4
-        pause_time = np.random.normal(mean, std)
-        pause_time = max(min_time, min(max_time, pause_time))
+        """Pause aléatoire réduite"""
+        pause_time = random.uniform(min_time, max_time)
         time.sleep(pause_time)
 
 class ImageDetector:
-    """Classe pour la détection d'images"""
+    """Classe pour la détection d'images avec système anti-doublons"""
     def __init__(self):
         self.templates: List[Template] = []
         self.detection_region = None  # (x, y, width, height)
-        self.last_detection_time = {}
-        self.detection_cooldown = 2.0  # Secondes entre détections du même objet
+        self.clicked_positions: Set[Tuple[int, int]] = set()  # Positions déjà cliquées
+        self.position_history = deque(maxlen=50)  # Historique des dernières positions
+        self.click_cooldown = {}  # Cooldown par position
+        self.min_distance_between_clicks = 50  # Distance minimale entre deux clics
+        self.position_timeout = 10.0  # Temps avant de pouvoir recliquer au même endroit
     
     def add_template(self, template: Template):
         """Ajouter un template à détecter"""
@@ -135,6 +129,51 @@ class ImageDetector:
         """Définir la région de détection"""
         self.detection_region = (x, y, width, height)
     
+    def reset_clicked_positions(self):
+        """Réinitialiser les positions cliquées"""
+        self.clicked_positions.clear()
+        self.click_cooldown.clear()
+        self.position_history.clear()
+    
+    def is_position_valid(self, x: int, y: int) -> bool:
+        """Vérifier si une position peut être cliquée"""
+        current_time = time.time()
+        
+        # Nettoyer les anciennes positions du cooldown
+        positions_to_remove = []
+        for pos, timestamp in self.click_cooldown.items():
+            if current_time - timestamp > self.position_timeout:
+                positions_to_remove.append(pos)
+        
+        for pos in positions_to_remove:
+            del self.click_cooldown[pos]
+            if pos in self.clicked_positions:
+                self.clicked_positions.remove(pos)
+        
+        # Vérifier si la position est trop proche d'une position récente
+        for clicked_x, clicked_y in self.clicked_positions:
+            distance = math.sqrt((x - clicked_x)**2 + (y - clicked_y)**2)
+            if distance < self.min_distance_between_clicks:
+                return False
+        
+        # Vérifier le cooldown spécifique
+        for (cx, cy), _ in self.click_cooldown.items():
+            if abs(x - cx) < 30 and abs(y - cy) < 30:
+                return False
+        
+        return True
+    
+    def mark_position_clicked(self, x: int, y: int):
+        """Marquer une position comme cliquée"""
+        # Arrondir la position pour grouper les positions proches
+        rounded_x = (x // 30) * 30
+        rounded_y = (y // 30) * 30
+        position = (rounded_x, rounded_y)
+        
+        self.clicked_positions.add(position)
+        self.click_cooldown[position] = time.time()
+        self.position_history.append((x, y))
+    
     def capture_screen(self) -> np.ndarray:
         """Capturer l'écran ou une région spécifique"""
         if self.detection_region:
@@ -143,54 +182,76 @@ class ImageDetector:
         else:
             screenshot = ImageGrab.grab()
         
-        # Convertir en array numpy pour OpenCV
         screenshot = np.array(screenshot)
         screenshot = cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR)
         return screenshot
     
     def detect_template(self, screenshot: np.ndarray, template: Template) -> List[Tuple[int, int]]:
-        """Détecter un template dans une capture d'écran"""
+        """Détecter un template avec filtrage des positions déjà cliquées"""
         if not template.enabled:
             return []
         
-        # Vérifier le cooldown
-        current_time = time.time()
-        if template.name in self.last_detection_time:
-            if current_time - self.last_detection_time[template.name] < self.detection_cooldown:
-                return []
-        
-        # Charger le template
         template_img = cv2.imread(template.image_path)
         if template_img is None:
             return []
         
-        # Template matching
         result = cv2.matchTemplate(screenshot, template_img, cv2.TM_CCOEFF_NORMED)
-        
-        # Trouver toutes les correspondances au-dessus du seuil
         locations = np.where(result >= template.threshold)
         matches = []
         
         h, w = template_img.shape[:2]
         
-        # Convertir en liste de coordonnées
         for pt in zip(*locations[::-1]):
             center_x = pt[0] + w // 2 + template.click_offset_x
             center_y = pt[1] + h // 2 + template.click_offset_y
             
-            # Ajuster si on a une région de détection
             if self.detection_region:
                 center_x += self.detection_region[0]
                 center_y += self.detection_region[1]
             
-            matches.append((center_x, center_y))
+            # Vérifier si cette position est valide (pas déjà cliquée)
+            if self.is_position_valid(center_x, center_y):
+                matches.append((center_x, center_y))
         
-        # Supprimer les doublons proches
+        # Supprimer les doublons proches et trier par distance depuis la dernière position
         if matches:
             matches = self.remove_close_duplicates(matches, min_distance=30)
-            self.last_detection_time[template.name] = current_time
+            matches = self.sort_by_optimal_path(matches)
         
         return matches
+    
+    def sort_by_optimal_path(self, points: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+        """Trier les points pour un parcours optimal (plus proche voisin)"""
+        if len(points) <= 1:
+            return points
+        
+        # Obtenir la position actuelle de la souris
+        current_x, current_y = pyautogui.position()
+        
+        sorted_points = []
+        remaining = points.copy()
+        current_pos = (current_x, current_y)
+        
+        while remaining:
+            # Trouver le point le plus proche
+            min_dist = float('inf')
+            closest_point = None
+            closest_idx = -1
+            
+            for idx, point in enumerate(remaining):
+                dist = math.sqrt((point[0] - current_pos[0])**2 + 
+                               (point[1] - current_pos[1])**2)
+                if dist < min_dist:
+                    min_dist = dist
+                    closest_point = point
+                    closest_idx = idx
+            
+            if closest_point:
+                sorted_points.append(closest_point)
+                remaining.pop(closest_idx)
+                current_pos = closest_point
+        
+        return sorted_points
     
     def remove_close_duplicates(self, points: List[Tuple[int, int]], min_distance: int = 30) -> List[Tuple[int, int]]:
         """Supprimer les points trop proches les uns des autres"""
@@ -212,11 +273,10 @@ class ImageDetector:
         return filtered
     
     def detect_all(self) -> List[Tuple[Template, List[Tuple[int, int]]]]:
-        """Détecter tous les templates actifs"""
+        """Détecter tous les templates actifs avec système de rotation"""
         screenshot = self.capture_screen()
         results = []
         
-        # Trier par priorité
         sorted_templates = sorted(self.templates, key=lambda t: t.priority, reverse=True)
         
         for template in sorted_templates:
@@ -227,20 +287,22 @@ class ImageDetector:
         return results
 
 class PixelBot:
-    """Bot principal avec détection d'image"""
+    """Bot principal avec détection d'image amélioré"""
     def __init__(self):
         self.mouse = Mouse()
         self.detector = ImageDetector()
         self.is_running = False
-        self.shift_mode = True  # Mode Shift pour activer
-        self.auto_click_mode = False  # Mode auto-click alternatif
+        self.shift_mode = True
+        self.auto_click_mode = False
         self.config_file = "bot_config.json"
         self.templates_folder = "templates"
         self.setup_folders()
         self.setup_hotkeys()
         self.action_queue = queue.Queue()
-        self.pending_actions = []  # Actions en attente
+        self.pending_actions = []
         self.last_shift_state = False
+        self.shift_released = threading.Event()  # Event pour détecter le relâchement de Shift
+        self.current_action_thread = None
         self.stats = {
             'clicks': 0,
             'detections': 0,
@@ -270,26 +332,29 @@ class PixelBot:
         if self.is_running:
             return
         
+        # Réinitialiser les positions cliquées au démarrage
+        self.detector.reset_clicked_positions()
+        
         if self.shift_mode:
             print("\n🟢 Bot démarré en mode SHIFT!")
             print("📌 Maintenez SHIFT pour activer les clics")
-            print("Le bot analyse en arrière-plan et clique quand vous maintenez Shift")
+            print("📍 Système de rotation activé - évite les doublons")
         else:
             print("\n🟢 Bot démarré en mode AUTO!")
-            print("Le bot clique automatiquement sur les éléments détectés")
         
         print("F1 : Toggle Bot | F2 : Arrêt | F10 : Capturer template")
         
         self.is_running = True
         self.stats['start_time'] = time.time()
         self.pending_actions = []
+        self.shift_released.clear()
         
-        # Thread de détection (toujours actif)
+        # Thread de détection
         detection_thread = threading.Thread(target=self.detection_loop)
         detection_thread.daemon = True
         detection_thread.start()
         
-        # Thread d'action (contrôlé par Shift ou automatique)
+        # Thread d'action
         action_thread = threading.Thread(target=self.action_loop)
         action_thread.daemon = True
         action_thread.start()
@@ -303,88 +368,103 @@ class PixelBot:
     def stop_bot(self):
         """Arrêter le bot"""
         self.is_running = False
+        self.shift_released.set()  # Débloquer les threads en attente
         print("\n🔴 Bot arrêté!")
         self.print_stats()
     
     def detection_loop(self):
-        """Boucle de détection (tourne toujours en arrière-plan)"""
+        """Boucle de détection optimisée"""
         while self.is_running:
             try:
                 # Détecter tous les templates
                 detections = self.detector.detect_all()
                 
                 if detections:
-                    # Vider les anciennes détections
-                    self.pending_actions = []
-                    
-                    # Ajouter les nouvelles détections
+                    # Créer une liste triée de toutes les détections
+                    all_detections = []
                     for template, matches in detections:
                         for match in matches:
-                            self.pending_actions.append((template, match))
-                            self.stats['detections'] += 1
-                            
-                            if self.shift_mode:
-                                # En mode Shift, on affiche juste qu'on a détecté
-                                print(f"👁️ Détecté: {template.name} à ({match[0]}, {match[1]}) - En attente de SHIFT")
-                            else:
-                                # En mode auto, on ajoute à la queue
-                                self.action_queue.put((template, match))
-                                print(f"🎯 Détecté: {template.name} à ({match[0]}, {match[1]})")
+                            all_detections.append((template, match))
+                    
+                    # Trier par distance optimale
+                    if all_detections:
+                        self.pending_actions = all_detections
+                        self.stats['detections'] += len(all_detections)
+                        
+                        if self.shift_mode:
+                            print(f"👁️ {len(all_detections)} cibles détectées - En attente de SHIFT")
                 
-                # Pause entre détections
-                time.sleep(random.uniform(0.3, 0.6))
+                # Pause courte entre détections
+                time.sleep(random.uniform(0.2, 0.4))
                 
             except Exception as e:
                 print(f"❌ Erreur détection: {e}")
     
     def shift_monitor(self):
-        """Surveille l'état de la touche Shift"""
+        """Surveille l'état de la touche Shift avec arrêt immédiat"""
         while self.is_running and self.shift_mode:
             try:
                 shift_pressed = keyboard.is_pressed('shift')
                 
-                # Détection du changement d'état
                 if shift_pressed and not self.last_shift_state:
-                    print("⚡ SHIFT activé - Exécution des actions en attente...")
-                    # Ajouter les actions en attente à la queue
+                    print("⚡ SHIFT activé - Exécution des actions...")
+                    self.shift_released.clear()
+                    # Ajouter les actions à la queue
                     for action in self.pending_actions:
                         self.action_queue.put(action)
                     self.pending_actions = []
+                    
                 elif not shift_pressed and self.last_shift_state:
-                    print("💤 SHIFT relâché - En attente...")
-                    # Vider la queue si on relâche Shift
+                    print("💤 SHIFT relâché - Arrêt immédiat")
+                    # Signal pour arrêter immédiatement
+                    self.shift_released.set()
+                    # Vider la queue
                     while not self.action_queue.empty():
                         try:
                             self.action_queue.get_nowait()
                         except:
                             break
+                    # Réinitialiser pour le prochain cycle
+                    self.detector.reset_clicked_positions()
                 
                 self.last_shift_state = shift_pressed
-                time.sleep(0.05)  # Check rapide pour réactivité
+                time.sleep(0.01)  # Check très rapide
                 
             except Exception as e:
                 print(f"❌ Erreur monitoring Shift: {e}")
     
     def action_loop(self):
-        """Boucle d'exécution des actions"""
+        """Boucle d'exécution des actions avec arrêt immédiat"""
         while self.is_running:
             try:
-                # En mode Shift, on n'exécute que si Shift est pressé
-                if self.shift_mode and not keyboard.is_pressed('shift'):
-                    time.sleep(0.05)
+                # En mode Shift, vérifier constamment si Shift est relâché
+                if self.shift_mode:
+                    if not keyboard.is_pressed('shift'):
+                        time.sleep(0.01)
+                        continue
+                    
+                    # Vérifier si on doit s'arrêter
+                    if self.shift_released.is_set():
+                        continue
+                
+                # Récupérer une action avec timeout très court
+                try:
+                    template, position = self.action_queue.get(timeout=0.01)
+                except queue.Empty:
                     continue
                 
-                # Récupérer une action de la queue (timeout court pour réactivité)
-                template, position = self.action_queue.get(timeout=0.1)
+                # Vérification finale avant le clic
+                if self.shift_mode:
+                    if not keyboard.is_pressed('shift') or self.shift_released.is_set():
+                        continue
                 
-                # Double vérification pour le mode Shift
-                if self.shift_mode and not keyboard.is_pressed('shift'):
-                    continue
+                # Marquer la position comme cliquée AVANT le clic
+                self.detector.mark_position_clicked(position[0], position[1])
                 
                 # Exécuter l'action
-                print(f"🖱️ Clic sur {template.name}")
+                print(f"🖱️ Clic sur {template.name} à ({position[0]}, {position[1]})")
                 
-                # En mode Shift, toujours faire un shift+clic
+                # Faire le clic rapidement
                 if self.shift_mode or keyboard.is_pressed('shift'):
                     self.mouse.shift_click(position[0], position[1])
                 else:
@@ -392,15 +472,20 @@ class PixelBot:
                 
                 self.stats['clicks'] += 1
                 
-                # Pause après action (simule temps de réaction humain)
-                # Plus court en mode Shift car l'utilisateur contrôle
-                if self.shift_mode:
-                    time.sleep(random.uniform(0.3, 0.6))
-                else:
-                    time.sleep(random.uniform(0.8, 1.5))
+                # Vérifier encore si on doit s'arrêter après le clic
+                if self.shift_mode and (not keyboard.is_pressed('shift') or self.shift_released.is_set()):
+                    print("⏸️ Arrêt après clic - Shift relâché")
+                    # Vider la queue
+                    while not self.action_queue.empty():
+                        try:
+                            self.action_queue.get_nowait()
+                        except:
+                            break
+                    continue
                 
-            except queue.Empty:
-                continue
+                # Micro-pause entre actions
+                time.sleep(random.uniform(0.1, 0.2))
+                
             except Exception as e:
                 print(f"❌ Erreur action: {e}")
     
@@ -409,15 +494,12 @@ class PixelBot:
         print("\n📸 Mode capture - Sélectionnez la zone à capturer...")
         time.sleep(2)
         
-        # Obtenir la sélection de l'utilisateur
         x1, y1, x2, y2 = self.get_selection()
         if x1 is None:
             return
         
-        # Capturer la zone
         screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
         
-        # Sauvegarder
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         filename = f"{self.templates_folder}/template_{timestamp}.png"
         screenshot.save(filename)
@@ -429,11 +511,9 @@ class PixelBot:
         print("Cliquez et maintenez pour sélectionner une zone...")
         print("Appuyez sur ESC pour annuler")
         
-        # Simplification: utiliser pyautogui pour obtenir deux points
         print("Cliquez sur le coin supérieur gauche...")
         time.sleep(0.5)
         
-        # Attendre le clic
         while not pyautogui.mouseDown():
             if keyboard.is_pressed('esc'):
                 print("❌ Sélection annulée")
@@ -455,7 +535,6 @@ class PixelBot:
         x2, y2 = pyautogui.position()
         print(f"Point 2: ({x2}, {y2})")
         
-        # S'assurer que les coordonnées sont dans le bon ordre
         x1, x2 = min(x1, x2), max(x1, x2)
         y1, y2 = min(y1, y2), max(y1, y2)
         
@@ -469,6 +548,7 @@ class PixelBot:
             print(f"  Durée: {duration:.1f}s")
             print(f"  Détections: {self.stats['detections']}")
             print(f"  Clics: {self.stats['clicks']}")
+            print(f"  Positions uniques: {len(self.detector.clicked_positions)}")
     
     def load_config(self):
         """Charger la configuration"""
@@ -476,19 +556,21 @@ class PixelBot:
             with open(self.config_file, 'r') as f:
                 config = json.load(f)
                 
-                # Charger le mode
                 mode = config.get('mode', 'shift')
                 self.shift_mode = (mode == 'shift')
                 self.auto_click_mode = (mode == 'auto')
                 
-                # Charger les templates
                 for template_data in config.get('templates', []):
                     template = Template(**template_data)
                     self.detector.add_template(template)
                 
-                # Charger la région de détection
                 if 'detection_region' in config:
                     self.detector.set_detection_region(**config['detection_region'])
+                
+                # Charger les paramètres de vitesse si présents
+                settings = config.get('settings', {})
+                if 'move_speed' in settings:
+                    self.mouse.move_speed = settings['move_speed']
                 
                 print(f"✅ Configuration chargée: {len(self.detector.templates)} templates")
                 print(f"📌 Mode: {'SHIFT' if self.shift_mode else 'AUTO'}")
@@ -508,7 +590,12 @@ class PixelBot:
                     'click_offset_y': t.click_offset_y
                 }
                 for t in self.detector.templates
-            ]
+            ],
+            'settings': {
+                'move_speed': self.mouse.move_speed,
+                'min_distance_between_clicks': self.detector.min_distance_between_clicks,
+                'position_timeout': self.detector.position_timeout
+            }
         }
         
         if self.detector.detection_region:
@@ -524,26 +611,25 @@ class PixelBot:
         
         print(f"✅ Configuration sauvegardée")
 
-# Interface graphique
+# Interface graphique (inchangée mais avec ajout du bouton reset)
 class BotGUI:
     """Interface graphique pour configurer le bot"""
     def __init__(self, bot: PixelBot):
         self.bot = bot
         self.root = tk.Tk()
         self.root.title("Pixel Bot - Configuration")
-        self.root.geometry("850x650")
+        self.root.geometry("850x700")
         
-        self.mode_var = None  # Sera initialisé dans setup_ui
+        self.mode_var = None
         self.setup_ui()
         self.refresh_templates()
     
     def setup_ui(self):
         """Créer l'interface"""
-        # Frame principal
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Section Mode de fonctionnement
+        # Section Mode
         mode_frame = ttk.LabelFrame(main_frame, text="Mode de fonctionnement", padding="10")
         mode_frame.grid(row=0, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
@@ -555,13 +641,14 @@ class BotGUI:
                        variable=self.mode_var, value="auto",
                        command=self.update_mode).pack(anchor=tk.W)
         
-        ttk.Label(mode_frame, text="En mode SHIFT : Le bot analyse en permanence mais ne clique que quand vous maintenez Shift", 
-                 font=('Arial', 9), foreground='gray').pack(anchor=tk.W, pady=(5, 0))
+        ttk.Label(mode_frame, text="✨ Système anti-doublons: évite de cliquer plusieurs fois au même endroit", 
+                 font=('Arial', 9), foreground='green').pack(anchor=tk.W, pady=(5, 0))
+        ttk.Label(mode_frame, text="⚡ Mouvements rapides et fluides (< 1 seconde pour traverser l'écran)", 
+                 font=('Arial', 9), foreground='blue').pack(anchor=tk.W)
         
         # Section Templates
         ttk.Label(main_frame, text="Templates", font=('Arial', 14, 'bold')).grid(row=1, column=0, sticky=tk.W, pady=(10, 5))
         
-        # Liste des templates
         self.templates_frame = ttk.Frame(main_frame)
         self.templates_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
@@ -572,16 +659,16 @@ class BotGUI:
         ttk.Button(control_frame, text="Ajouter Template", command=self.add_template).pack(side=tk.LEFT, padx=5)
         ttk.Button(control_frame, text="Capturer Nouveau", command=self.capture_new_template).pack(side=tk.LEFT, padx=5)
         ttk.Button(control_frame, text="Définir Zone", command=self.set_detection_zone).pack(side=tk.LEFT, padx=5)
+        ttk.Button(control_frame, text="🔄 Reset Positions", command=self.reset_positions).pack(side=tk.LEFT, padx=5)
         
-        # Section Arbres spécifiques
-        ttk.Label(main_frame, text="Arbres à récolter", font=('Arial', 12, 'bold')).grid(row=4, column=0, sticky=tk.W, pady=(20, 5))
+        # Section Arbres
+        ttk.Label(main_frame, text="Bucheron", font=('Arial', 12, 'bold')).grid(row=4, column=0, sticky=tk.W, pady=(20, 5))
         
         trees_frame = ttk.Frame(main_frame)
         trees_frame.grid(row=5, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
-        # Checkboxes pour les arbres
         self.tree_vars = {}
-        trees = ['Frêne', 'Châtaignier', 'Noyer', 'Chêne', 'Érable', 'If', 'Ébène', 'Orme']
+        trees = ['Frene', 'Chataignier', 'Ortie'] #, 'Noyer', 'Chene', 'Bombu', 'Erable', 'Oliviolet', 'Pin', 'If', 'Bambou', 'Merisier', 'Noisetier', 'Ebene', 'Kaliptus', 'Charme', 'Bambou Sacre', 'Aquajou', 'Tremble']
         
         for i, tree in enumerate(trees):
             var = tk.BooleanVar()
@@ -598,7 +685,7 @@ class BotGUI:
         ttk.Button(action_frame, text="💾 Sauvegarder Config", command=self.save_config).pack(side=tk.LEFT, padx=5)
         ttk.Button(action_frame, text="📂 Charger Config", command=self.load_config).pack(side=tk.LEFT, padx=5)
         
-        # Status bar avec info mode
+        # Status bar
         status_frame = ttk.Frame(main_frame)
         status_frame.grid(row=7, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0))
         
@@ -606,41 +693,39 @@ class BotGUI:
         status_bar = ttk.Label(status_frame, textvariable=self.status_var, relief=tk.SUNKEN)
         status_bar.pack(fill=tk.X)
         
-        # Info supplémentaire
-        info_label = ttk.Label(status_frame, text="💡 Astuce: En mode SHIFT, maintenez Shift pour que le bot clique sur les éléments détectés", 
+        info_label = ttk.Label(status_frame, text="💡 Relâchez SHIFT = Arrêt immédiat | Système de rotation intelligent activé", 
                               font=('Arial', 9), foreground='blue')
         info_label.pack(pady=(5, 0))
     
+    def reset_positions(self):
+        """Réinitialiser les positions cliquées"""
+        self.bot.detector.reset_clicked_positions()
+        self.status_var.set("Positions réinitialisées - Prêt à scanner toute la zone")
+    
     def refresh_templates(self):
         """Rafraîchir la liste des templates"""
-        # Effacer les widgets existants
         for widget in self.templates_frame.winfo_children():
             widget.destroy()
         
-        # Headers
         ttk.Label(self.templates_frame, text="Nom", font=('Arial', 10, 'bold')).grid(row=0, column=0, padx=5)
         ttk.Label(self.templates_frame, text="Fichier", font=('Arial', 10, 'bold')).grid(row=0, column=1, padx=5)
         ttk.Label(self.templates_frame, text="Actif", font=('Arial', 10, 'bold')).grid(row=0, column=2, padx=5)
         ttk.Label(self.templates_frame, text="Seuil", font=('Arial', 10, 'bold')).grid(row=0, column=3, padx=5)
         ttk.Label(self.templates_frame, text="Actions", font=('Arial', 10, 'bold')).grid(row=0, column=4, padx=5)
         
-        # Afficher les templates
         for i, template in enumerate(self.bot.detector.templates, 1):
             ttk.Label(self.templates_frame, text=template.name).grid(row=i, column=0, padx=5)
             ttk.Label(self.templates_frame, text=os.path.basename(template.image_path)).grid(row=i, column=1, padx=5)
             
-            # Checkbox actif
             var = tk.BooleanVar(value=template.enabled)
             var.trace('w', lambda *args, t=template, v=var: setattr(t, 'enabled', v.get()))
             ttk.Checkbutton(self.templates_frame, variable=var).grid(row=i, column=2, padx=5)
             
-            # Seuil
             threshold_var = tk.StringVar(value=str(template.threshold))
             threshold_entry = ttk.Entry(self.templates_frame, textvariable=threshold_var, width=5)
             threshold_entry.grid(row=i, column=3, padx=5)
             threshold_var.trace('w', lambda *args, t=template, v=threshold_var: self.update_threshold(t, v))
             
-            # Bouton supprimer
             ttk.Button(self.templates_frame, text="❌", 
                       command=lambda t=template: self.remove_template(t)).grid(row=i, column=4, padx=5)
     
@@ -669,12 +754,10 @@ class BotGUI:
     
     def capture_new_template(self):
         """Capturer un nouveau template"""
-        self.root.withdraw()  # Cacher la fenêtre
+        self.root.withdraw()
         time.sleep(0.5)
-        
         self.bot.capture_template()
-        
-        self.root.deiconify()  # Réafficher la fenêtre
+        self.root.deiconify()
         self.refresh_templates()
     
     def set_detection_zone(self):
@@ -703,11 +786,10 @@ class BotGUI:
         self.bot.auto_click_mode = (mode == "auto")
         
         if self.bot.shift_mode:
-            self.status_var.set("Mode SHIFT activé - Maintenez Shift pour cliquer")
+            self.status_var.set("Mode SHIFT - Relâcher = Arrêt immédiat")
         else:
-            self.status_var.set("Mode AUTO activé - Clics automatiques")
+            self.status_var.set("Mode AUTO - Clics automatiques")
         
-        # Si le bot est en cours, le redémarrer avec le nouveau mode
         if self.bot.is_running:
             self.bot.stop_bot()
             time.sleep(0.5)
@@ -720,13 +802,11 @@ class BotGUI:
             self.start_button.config(text="▶ Démarrer Bot")
             self.status_var.set("Bot arrêté")
         else:
-            # Mettre à jour les templates selon les arbres sélectionnés
             for template in self.bot.detector.templates:
                 for tree_name, var in self.tree_vars.items():
                     if tree_name.lower() in template.name.lower():
                         template.enabled = var.get()
             
-            # Appliquer le mode sélectionné
             mode = self.mode_var.get()
             self.bot.shift_mode = (mode == "shift")
             self.bot.auto_click_mode = (mode == "auto")
@@ -735,7 +815,7 @@ class BotGUI:
             self.start_button.config(text="⏸ Arrêter Bot")
             
             if self.bot.shift_mode:
-                self.status_var.set("Bot actif - Mode SHIFT (Maintenez Shift pour activer)")
+                self.status_var.set("Bot actif - SHIFT pour activer | Relâcher = Stop")
             else:
                 self.status_var.set("Bot actif - Mode AUTO")
     
@@ -749,13 +829,12 @@ class BotGUI:
         self.bot.load_config()
         self.refresh_templates()
         
-        # Mettre à jour le mode dans l'interface
         if self.bot.shift_mode:
             self.mode_var.set("shift")
-            self.status_var.set("Configuration chargée - Mode SHIFT")
+            self.status_var.set("Config chargée - Mode SHIFT")
         else:
             self.mode_var.set("auto")
-            self.status_var.set("Configuration chargée - Mode AUTO")
+            self.status_var.set("Config chargée - Mode AUTO")
     
     def run(self):
         """Lancer l'interface"""
@@ -763,22 +842,21 @@ class BotGUI:
 
 # Programme principal
 if __name__ == "__main__":
-    print("🤖 Pixel Bot avec reconnaissance d'image")
+    print("🤖 Pixel Bot v2.0 - Système intelligent")
+    print("=" * 50)
+    print("✨ Nouveautés:")
+    print("  • Système anti-doublons avec rotation intelligente")
+    print("  • Arrêt immédiat au relâchement de SHIFT")
+    print("  • Mouvements ultra-rapides et fluides")
     print("=" * 50)
     
-    # Créer le bot
     bot = PixelBot()
-    
-    # Charger la configuration si elle existe
     bot.load_config()
     
-    # Lancer l'interface graphique
     gui = BotGUI(bot)
     
-    # Thread pour les raccourcis clavier
     keyboard_thread = threading.Thread(target=lambda: keyboard.wait('ctrl+q'))
     keyboard_thread.daemon = True
     keyboard_thread.start()
     
-    # Lancer l'interface
     gui.run()

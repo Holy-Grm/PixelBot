@@ -2,13 +2,60 @@
   "mode": "shift",
   "templates": [
     {
-      "name": "frene",
-      "image_path": "C:/VS Code/PixelBot/templates/frene1.png",
+      "name": "Frene",
+      "image_path": "templates/frene.png",
+      "enabled": true,
+      "threshold": 0.9,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Ortie",
+      "image_path": "templates/ortie.png",
+      "enabled": true,
+      "threshold": 0.9,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Chataignier",
+      "image_path": "templates/chataigner.png",
+      "enabled": true,
+      "threshold": 0.9,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Chataignier2",
+      "image_path": "templates/chataigner2.png",
+      "enabled": true,
+      "threshold": 0.9,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Noyer",
+      "image_path": "C:/VS Code/PixelBot/templates/noyer.png",
       "enabled": true,
       "threshold": 0.8,
       "priority": 1,
       "click_offset_x": 0,
       "click_offset_y": 0
     }
-  ]
+  ],
+  "settings": {
+    "move_speed": 0.1,
+    "min_distance_between_clicks": 50,
+    "position_timeout": 10.0
+  },
+  "detection_region": {
+    "x": 315,
+    "y": 47,
+    "width": 1320,
+    "height": 945
+  }
 }
