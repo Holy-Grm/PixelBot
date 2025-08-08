@@ -24,8 +24,8 @@
     {
       "name": "Ortie",
       "image_path": "templates/ortie.png",
-      "enabled": false,
-      "threshold": 0.9,
+      "enabled": true,
+      "threshold": 0.8,
       "priority": 1,
       "click_offset_x": 0,
       "click_offset_y": 0
@@ -33,7 +33,7 @@
     {
       "name": "Noyer",
       "image_path": "C:/VS Code/PixelBot/templates/noyer.png",
-      "enabled": false,
+      "enabled": true,
       "threshold": 0.8,
       "priority": 1,
       "click_offset_x": 0,
@@ -44,6 +44,42 @@
       "image_path": "C:/VS Code/PixelBot/templates/chataigner_tronc.png",
       "enabled": true,
       "threshold": 0.95,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Bl\u00e9",
+      "image_path": "C:/VS Code/PixelBot/templates/ble.png",
+      "enabled": true,
+      "threshold": 0.85,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Orge",
+      "image_path": "C:/VS Code/PixelBot/templates/orge.png",
+      "enabled": true,
+      "threshold": 0.75,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Orge2",
+      "image_path": "C:/VS Code/PixelBot/templates/orge2.png",
+      "enabled": true,
+      "threshold": 0.75,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    },
+    {
+      "name": "Bl\u00e92",
+      "image_path": "C:/VS Code/PixelBot/templates/ble2.png",
+      "enabled": true,
+      "threshold": 0.85,
       "priority": 1,
       "click_offset_x": 0,
       "click_offset_y": 0

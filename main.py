@@ -718,8 +718,9 @@ class BotController:
         self.pending_actions = []
         self.threads = []
         
-        # Events Shift
+        # Events Shift + Espace
         self.last_shift_state = False
+        self.bot_activated = False  # Nouvel état : bot activé par SHIFT+ESPACE
         self.shift_released = threading.Event()
         
         self._setup_hotkeys()
@@ -763,10 +764,11 @@ class BotController:
         self.action_service.reset_stats()
         
         self.is_running = True
+        self.bot_activated = False  # Réinitialiser l'état d'activation
         self.shift_released.clear()
         self.pending_actions = []
         
-        mode_text = "SHIFT" if self.config.mode == BotMode.SHIFT else "AUTO"
+        mode_text = "SHIFT+ESPACE" if self.config.mode == BotMode.SHIFT else "AUTO"
         self.logger.success(f"Bot démarré en mode {mode_text}")
         
         # Démarrer les threads
@@ -789,6 +791,7 @@ class BotController:
             return
         
         self.is_running = False
+        self.bot_activated = False  # Réinitialiser l'état d'activation
         self.shift_released.set()
         self.action_service.clear_queue()
         
@@ -814,7 +817,7 @@ class BotController:
                         self.action_service.stats['detections'] += len(all_detections)
                         
                         if self.config.mode == BotMode.SHIFT:
-                            self.logger.info(f"{len(all_detections)} cibles - En attente SHIFT")
+                            self.logger.info(f"{len(all_detections)} cibles - En attente SHIFT + ESPACE")
                         else:
                             # Mode AUTO - ajouter immédiatement
                             for template, position in all_detections:
@@ -827,13 +830,17 @@ class BotController:
                 self.logger.error(f"Erreur détection: {e}")
     
     def _shift_monitor(self):
-        """Surveillance de la touche Shift"""
+        """Surveillance de la combinaison Shift + Espace"""
         while self.is_running and self.config.mode == BotMode.SHIFT:
             try:
                 shift_pressed = keyboard.is_pressed('shift')
+                space_pressed = keyboard.is_pressed('space')
+                shift_space_combo = shift_pressed and space_pressed
                 
-                if shift_pressed and not self.last_shift_state:
-                    self.logger.info("SHIFT activé - Exécution")
+                # Déclenchement : SHIFT + ESPACE pressés et bot pas encore activé
+                if shift_space_combo and not self.bot_activated:
+                    self.logger.info("SHIFT + ESPACE activé - Exécution")
+                    self.bot_activated = True
                     self.shift_released.clear()
                     self.event_manager.emit(EventType.SHIFT_PRESSED)
                     
@@ -842,8 +849,10 @@ class BotController:
                         self.action_service.add_action(template, position)
                     self.pending_actions = []
                 
-                elif not shift_pressed and self.last_shift_state:
+                # Arrêt : SHIFT relâché (peu importe l'état d'ESPACE) et bot était activé
+                elif not shift_pressed and self.bot_activated:
                     self.logger.info("SHIFT relâché - Arrêt")
+                    self.bot_activated = False
                     self.shift_released.set()
                     self.action_service.clear_queue()
                     self.detection_service.reset_positions()
@@ -853,7 +862,7 @@ class BotController:
                 time.sleep(0.01)
                 
             except Exception as e:
-                self.logger.error(f"Erreur monitoring Shift: {e}")
+                self.logger.error(f"Erreur monitoring Shift+Espace: {e}")
     
     def _action_loop(self):
         """Boucle d'exécution des actions"""
@@ -861,7 +870,8 @@ class BotController:
             try:
                 # Vérifications mode SHIFT
                 if self.config.mode == BotMode.SHIFT:
-                    if not keyboard.is_pressed('shift') or self.shift_released.is_set():
+                    # Vérifier que SHIFT est pressé ET que le bot est activé
+                    if not keyboard.is_pressed('shift') or not self.bot_activated or self.shift_released.is_set():
                         time.sleep(0.01)
                         continue
                 
@@ -873,11 +883,11 @@ class BotController:
                 
                 # Vérification finale avant clic
                 if self.config.mode == BotMode.SHIFT:
-                    if not keyboard.is_pressed('shift') or self.shift_released.is_set():
+                    if not keyboard.is_pressed('shift') or not self.bot_activated or self.shift_released.is_set():
                         continue
                 
                 # Exécuter le clic
-                use_shift = (self.config.mode == BotMode.SHIFT) or keyboard.is_pressed('shift')
+                use_shift = (self.config.mode == BotMode.SHIFT and self.bot_activated) or keyboard.is_pressed('shift')
                 self.action_service.execute_click(template, position, use_shift)
                 
                 # Pause entre actions
@@ -982,12 +992,18 @@ class BotGUI:
         mode_frame = ttk.LabelFrame(parent, text="Mode de fonctionnement", padding="10")
         mode_frame.grid(row=0, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
-        ttk.Radiobutton(mode_frame, text="🎮 Mode SHIFT", 
+        ttk.Radiobutton(mode_frame, text="🎮 Mode SHIFT + ESPACE", 
                        variable=self.mode_var, value="shift",
                        command=self._update_mode).pack(anchor=tk.W)
         ttk.Radiobutton(mode_frame, text="🤖 Mode AUTO", 
                        variable=self.mode_var, value="auto",
                        command=self._update_mode).pack(anchor=tk.W)
+        
+        # Description du mode SHIFT + ESPACE
+        shift_desc = ttk.Label(mode_frame, 
+                              text="🎮 SHIFT + ESPACE : Déclenche le bot | Lâcher SHIFT : Arrête le bot", 
+                              font=('Arial', 9), foreground='blue')
+        shift_desc.pack(anchor=tk.W, pady=(2, 0))
         
         ttk.Label(mode_frame, text="✨ Interface de sélection visuelle comme l'outil de capture d'écran", 
                  font=('Arial', 9), foreground='green').pack(anchor=tk.W, pady=(5, 0))
@@ -1148,6 +1164,7 @@ if __name__ == "__main__":
     print("  • Configuration centralisée")
     print("  • Logging structuré")
     print("  • Code maintenable et extensible")
+    print("  • Mode SHIFT + ESPACE")
     print("=" * 60)
     
     controller = BotController()
