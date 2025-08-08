@@ -1,0 +1,14 @@
+{
+  "mode": "shift",
+  "templates": [
+    {
+      "name": "frene",
+      "image_path": "C:/VS Code/PixelBot/templates/frene1.png",
+      "enabled": true,
+      "threshold": 0.8,
+      "priority": 1,
+      "click_offset_x": 0,
+      "click_offset_y": 0
+    }
+  ]
+}
