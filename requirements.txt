@@ -1,0 +1,50 @@
+# Pixel Bot v3.0 - Dépendances Python
+# Installation: pip install -r requirements.txt
+
+# Computer Vision et traitement d'images
+opencv-python==4.8.1.78
+numpy==1.24.3
+Pillow==10.0.1
+
+# Automation de l'interface
+pyautogui==0.9.54
+keyboard==0.13.5
+
+# Interface graphique (inclus avec Python standard, mais listée pour référence)
+# tkinter - Inclus avec Python
+
+# Utilitaires système
+pathlib2==2.3.7; python_version < "3.4"
+
+# Dépendances optionnelles pour de meilleures performances
+# Décommentez si vous voulez des performances accrues
+
+# Pour l'accélération GPU (CUDA) avec OpenCV
+# opencv-contrib-python==4.8.1.78
+
+# Pour des calculs NumPy plus rapides
+# mkl==2023.2.0
+
+# Pour la gestion avancée des images
+# imageio==2.31.5
+# scikit-image==0.21.0
+
+# Pour le monitoring et les métriques (optionnel)
+# psutil==5.9.6
+
+# Pour les tests (développement uniquement)
+# pytest==7.4.3
+# pytest-cov==4.1.0
+
+# Notes d'installation:
+# 1. Assurez-vous d'avoir Python 3.7+ installé
+# 2. Il est recommandé d'utiliser un environnement virtuel:
+#    python -m venv venv
+#    source venv/bin/activate  # Linux/Mac
+#    venv\Scripts\activate     # Windows
+# 3. Installez les dépendances:
+#    pip install -r requirements.txt
+# 4. Sur certains systèmes, vous pourriez avoir besoin d'installer:
+#    - Sur Ubuntu/Debian: sudo apt-get install python3-tk python3-dev
+#    - Sur CentOS/RHEL: sudo yum install tkinter python3-devel
+#    - Sur macOS: brew install python-tk (si vous utilisez Homebrew)

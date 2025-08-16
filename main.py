@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+"""
+Pixel Bot v3.0 - Architecture Refactorisée
+Auteur: Votre nom
+Date: 2024
+
+Bot de détection et clic automatique avec interface graphique moderne.
+"""
+
 import cv2
 import numpy as np
 import pyautogui
@@ -12,54 +21,63 @@ from PIL import Image, ImageGrab
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from dataclasses import dataclass, asdict
-from typing import List, Tuple, Optional, Set, Callable, Dict, Any
+from typing import List, Tuple, Optional, Set, Callable, Dict, Any, Protocol
 from enum import Enum
 import queue
 from collections import deque
 from abc import ABC, abstractmethod
+import logging
+from contextlib import contextmanager
+from pathlib import Path
 
-# ================== CONSTANTS & CONFIGURATION ==================
+# ================== CONFIGURATION & CONSTANTS ==================
 
 class BotMode(Enum):
     SHIFT = "shift"
     AUTO = "auto"
 
-class Constants:
-    """Constantes globales du bot"""
+@dataclass
+class AppConfig:
+    """Configuration principale de l'application"""
     # Fichiers et dossiers
-    CONFIG_FILE = "bot_config.json"
-    TEMPLATES_FOLDER = "templates"
+    CONFIG_FILE: Path = Path("bot_config.json")
+    TEMPLATES_FOLDER: Path = Path("templates")
+    LOG_FILE: Path = Path("bot.log")
     
     # Paramètres souris
-    DEFAULT_MOVE_SPEED = 0.001
-    BEZIER_STEPS = 3
-    MOUSE_PRECISION_OFFSET = 1
+    DEFAULT_MOVE_SPEED: float = 0.001
+    BEZIER_STEPS: int = 3
+    MOUSE_PRECISION_OFFSET: int = 1
     
     # Paramètres détection
-    DEFAULT_THRESHOLD = 0.8
-    DEFAULT_PRIORITY = 1
-    MIN_DISTANCE_BETWEEN_CLICKS = 50
-    POSITION_TIMEOUT = 10.0
-    DETECTION_PAUSE_MIN = 0.2
-    DETECTION_PAUSE_MAX = 0.4
+    DEFAULT_THRESHOLD: float = 0.9
+    DEFAULT_PRIORITY: int = 1
+    MIN_DISTANCE_BETWEEN_CLICKS: int = 50
+    POSITION_TIMEOUT: float = 10.0
+    DETECTION_PAUSE_MIN: float = 0.2
+    DETECTION_PAUSE_MAX: float = 0.4
     
     # Interface
-    WINDOW_WIDTH = 850
-    WINDOW_HEIGHT = 600
+    WINDOW_WIDTH: int = 900
+    WINDOW_HEIGHT: int = 700
     
     # Raccourcis clavier
-    HOTKEY_TOGGLE = 'f1'
-    HOTKEY_STOP = 'f2'
-    HOTKEY_CAPTURE = 'f10'
-    HOTKEY_EXIT = 'ctrl+q'
+    HOTKEY_TOGGLE: str = 'f3'
+    HOTKEY_STOP: str = 'f2'
+    HOTKEY_CAPTURE: str = 'f10'
+    HOTKEY_EXIT: str = 'ctrl+q'
+    
+    def __post_init__(self):
+        """Créer les dossiers nécessaires"""
+        self.TEMPLATES_FOLDER.mkdir(exist_ok=True)
 
 @dataclass
 class BotConfig:
-    """Configuration centralisée du bot"""
+    """Configuration du bot"""
     mode: BotMode = BotMode.SHIFT
-    move_speed: float = Constants.DEFAULT_MOVE_SPEED
-    min_distance_between_clicks: int = Constants.MIN_DISTANCE_BETWEEN_CLICKS
-    position_timeout: float = Constants.POSITION_TIMEOUT
+    move_speed: float = 0.001
+    min_distance_between_clicks: int = 50
+    position_timeout: float = 10.0
     detection_region: Optional[Tuple[int, int, int, int]] = None
     
     def to_dict(self) -> Dict[str, Any]:
@@ -79,8 +97,8 @@ class Template:
     name: str
     image_path: str
     enabled: bool = True
-    threshold: float = Constants.DEFAULT_THRESHOLD
-    priority: int = Constants.DEFAULT_PRIORITY
+    threshold: float = 0.9
+    priority: int = 1
     click_offset_x: int = 0
     click_offset_y: int = 0
     
@@ -90,6 +108,17 @@ class Template:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Template':
         return cls(**data)
+    
+    @property
+    def exists(self) -> bool:
+        """Vérifier si le fichier template existe"""
+        return Path(self.image_path).exists()
+
+# ================== PROTOCOLS & INTERFACES ==================
+
+class EventListener(Protocol):
+    """Interface pour les écouteurs d'événements"""
+    def __call__(self, data: Any = None) -> None: ...
 
 # ================== EVENT SYSTEM ==================
 
@@ -103,54 +132,119 @@ class EventType(Enum):
     SHIFT_RELEASED = "shift_released"
     ERROR_OCCURRED = "error_occurred"
     STATUS_CHANGED = "status_changed"
+    CONFIG_LOADED = "config_loaded"
+    CONFIG_SAVED = "config_saved"
 
-class EventManager:
-    """Gestionnaire d'événements pour découpler les composants"""
-    def __init__(self):
-        self.listeners: Dict[EventType, List[Callable]] = {}
+class EventBus:
+    """Bus d'événements centralisé avec gestion d'erreurs"""
     
-    def subscribe(self, event_type: EventType, callback: Callable):
-        """S'abonner à un type d'événement"""
-        if event_type not in self.listeners:
-            self.listeners[event_type] = []
-        self.listeners[event_type].append(callback)
+    def __init__(self, logger: logging.Logger):
+        self._listeners: Dict[EventType, List[EventListener]] = {}
+        self._logger = logger
+        self._lock = threading.Lock()
     
-    def emit(self, event_type: EventType, data: Any = None):
-        """Émettre un événement"""
-        if event_type in self.listeners:
-            for callback in self.listeners[event_type]:
+    def subscribe(self, event_type: EventType, callback: EventListener) -> None:
+        """S'abonner à un type d'événement de manière thread-safe"""
+        with self._lock:
+            if event_type not in self._listeners:
+                self._listeners[event_type] = []
+            self._listeners[event_type].append(callback)
+    
+    def unsubscribe(self, event_type: EventType, callback: EventListener) -> None:
+        """Se désabonner d'un événement"""
+        with self._lock:
+            if event_type in self._listeners:
                 try:
-                    callback(data)
-                except Exception as e:
-                    print(f"❌ Erreur dans event listener {event_type}: {e}")
+                    self._listeners[event_type].remove(callback)
+                except ValueError:
+                    pass
+    
+    def emit(self, event_type: EventType, data: Any = None) -> None:
+        """Émettre un événement avec gestion d'erreurs"""
+        with self._lock:
+            listeners = self._listeners.get(event_type, []).copy()
+        
+        for listener in listeners:
+            try:
+                listener(data)
+            except Exception as e:
+                self._logger.error(f"Erreur dans event listener {event_type}: {e}")
 
 # ================== LOGGING SYSTEM ==================
 
-class Logger:
-    """Système de logging centralisé"""
-    def __init__(self, event_manager: EventManager):
-        self.event_manager = event_manager
+class BotLogger:
+    """Système de logging avancé"""
     
-    def info(self, message: str):
-        print(f"ℹ️ {message}")
-        self.event_manager.emit(EventType.STATUS_CHANGED, message)
+    def __init__(self, app_config: AppConfig, event_bus: EventBus):
+        self.event_bus = event_bus
+        self._setup_logging(app_config)
     
-    def success(self, message: str):
-        print(f"✅ {message}")
-        self.event_manager.emit(EventType.STATUS_CHANGED, message)
+    def _setup_logging(self, config: AppConfig):
+        """Configurer le système de logging"""
+        self.logger = logging.getLogger('PixelBot')
+        self.logger.setLevel(logging.INFO)
+        
+        # Éviter les doublons de handlers
+        if self.logger.handlers:
+            self.logger.handlers.clear()
+        
+        # Formatter
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s - %(message)s'
+        )
+        
+        # Handler console
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
+        
+        # Handler fichier
+        try:
+            file_handler = logging.FileHandler(config.LOG_FILE, encoding='utf-8')
+            file_handler.setFormatter(formatter)
+            self.logger.addHandler(file_handler)
+        except Exception as e:
+            print(f"Impossible de créer le fichier de log: {e}")
     
-    def warning(self, message: str):
-        print(f"⚠️ {message}")
-        self.event_manager.emit(EventType.STATUS_CHANGED, message)
+    def info(self, message: str, emit_event: bool = True):
+        self.logger.info(message)
+        if emit_event:
+            self.event_bus.emit(EventType.STATUS_CHANGED, f"ℹ️ {message}")
     
-    def error(self, message: str):
-        print(f"❌ {message}")
-        self.event_manager.emit(EventType.ERROR_OCCURRED, message)
+    def success(self, message: str, emit_event: bool = True):
+        self.logger.info(f"SUCCESS: {message}")
+        if emit_event:
+            self.event_bus.emit(EventType.STATUS_CHANGED, f"✅ {message}")
+    
+    def warning(self, message: str, emit_event: bool = True):
+        self.logger.warning(message)
+        if emit_event:
+            self.event_bus.emit(EventType.STATUS_CHANGED, f"⚠️ {message}")
+    
+    def error(self, message: str, emit_event: bool = True):
+        self.logger.error(message)
+        if emit_event:
+            self.event_bus.emit(EventType.ERROR_OCCURRED, f"❌ {message}")
+
+# ================== EXCEPTIONS ==================
+
+class BotException(Exception):
+    """Exception de base pour le bot"""
+    pass
+
+class ConfigurationError(BotException):
+    """Erreur de configuration"""
+    pass
+
+class TemplateError(BotException):
+    """Erreur liée aux templates"""
+    pass
 
 # ================== SCREEN CAPTURE SERVICE ==================
 
 class ScreenCaptureOverlay:
     """Overlay pour sélection visuelle de zone d'écran"""
+    
     def __init__(self):
         self.root = None
         self.canvas = None
@@ -179,7 +273,7 @@ class ScreenCaptureOverlay:
         # Configuration fenêtre plein écran
         self.root.attributes('-fullscreen', True)
         self.root.attributes('-topmost', True)
-        self.root.attributes('-alpha', 0.3)  # Transparence
+        self.root.attributes('-alpha', 0.3)
         self.root.configure(bg='black')
         self.root.focus_set()
         
@@ -194,7 +288,6 @@ class ScreenCaptureOverlay:
         
         # Instructions
         screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
         
         instruction_text = "Cliquez et glissez pour sélectionner une zone • ESC pour annuler"
         self.canvas.create_text(
@@ -238,7 +331,7 @@ class ScreenCaptureOverlay:
             outline='red',
             width=2,
             fill='red',
-            stipple='gray25'  # Motif semi-transparent
+            stipple='gray25'
         )
         
         # Afficher les dimensions
@@ -315,7 +408,8 @@ class ScreenCaptureOverlay:
 
 class ScreenCaptureService:
     """Service pour la capture et sélection d'écran"""
-    def __init__(self, logger: Logger):
+    
+    def __init__(self, logger: BotLogger):
         self.logger = logger
     
     def select_screen_area(self) -> Tuple[Optional[int], Optional[int], Optional[int], Optional[int]]:
@@ -342,103 +436,260 @@ class ScreenCaptureService:
 
 # ================== SERVICES ==================
 
+class ConfigService:
+    """Service de gestion de la configuration avec validation"""
+    
+    def __init__(self, app_config: AppConfig, logger: BotLogger, event_bus: EventBus):
+        self.app_config = app_config
+        self.logger = logger
+        self.event_bus = event_bus
+    
+    def save_config(self, bot_config: BotConfig, templates: List[Template]) -> bool:
+        """Sauvegarder la configuration avec validation"""
+        try:
+            data = {
+                'config': bot_config.to_dict(),
+                'templates': [t.to_dict() for t in templates]
+            }
+            
+            with open(self.app_config.CONFIG_FILE, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            
+            self.logger.success("Configuration sauvegardée")
+            self.event_bus.emit(EventType.CONFIG_SAVED, data)
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Erreur sauvegarde config: {e}")
+            return False
+    
+    def load_config(self) -> Tuple[BotConfig, List[Template]]:
+        """Charger la configuration avec validation"""
+        bot_config = BotConfig()
+        templates = []
+        
+        if not self.app_config.CONFIG_FILE.exists():
+            self.logger.info("Pas de fichier de configuration, utilisation des valeurs par défaut")
+            return bot_config, templates
+        
+        try:
+            with open(self.app_config.CONFIG_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            if 'config' in data:
+                bot_config = BotConfig.from_dict(data['config'])
+            
+            if 'templates' in data:
+                valid_templates = []
+                for template_data in data['templates']:
+                    template = Template.from_dict(template_data)
+                    if template.exists:
+                        valid_templates.append(template)
+                    else:
+                        self.logger.warning(f"Template ignoré (fichier manquant): {template.image_path}")
+                
+                templates = valid_templates
+            
+            self.logger.success(f"Configuration chargée: {len(templates)} templates")
+            self.event_bus.emit(EventType.CONFIG_LOADED, {'config': bot_config, 'templates': templates})
+            
+        except Exception as e:
+            self.logger.error(f"Erreur chargement config: {e}")
+        
+        return bot_config, templates
+
 class MouseService:
-    """Service pour la gestion des mouvements de souris"""
-    def __init__(self, config: BotConfig):
+    """Service de gestion de la souris avec amélioration des mouvements"""
+    
+    def __init__(self, config: BotConfig, logger: BotLogger):
         self.config = config
+        self.logger = logger
         self._setup_pyautogui()
+        self._movement_lock = threading.Lock()
     
     def _setup_pyautogui(self):
+        """Configuration de pyautogui"""
         pyautogui.FAILSAFE = True
         pyautogui.MINIMUM_DURATION = 0
         pyautogui.PAUSE = 0
     
-    def move_to(self, x: int, y: int, use_bezier: bool = True, speed_multiplier: float = 1.0):
-        """Déplacer la souris vers une position"""
-        current_x, current_y = pyautogui.position()
-        
-        # Ajouter une petite imprécision
-        x += random.randint(-Constants.MOUSE_PRECISION_OFFSET, Constants.MOUSE_PRECISION_OFFSET)
-        y += random.randint(-Constants.MOUSE_PRECISION_OFFSET, Constants.MOUSE_PRECISION_OFFSET)
-        
-        distance = math.sqrt((x - current_x)**2 + (y - current_y)**2)
-        
-        if distance < 50:
-            pyautogui.moveTo(x, y, duration=0)
-        elif use_bezier and distance > 100:
-            self._move_bezier(current_x, current_y, x, y, speed_multiplier)
-        else:
-            duration = min(0.2, distance / 5000) * speed_multiplier
-            pyautogui.moveTo(x, y, duration=duration)
-        
-        time.sleep(random.uniform(0.01, 0.03) * speed_multiplier)
+    def move_to(self, x: int, y: int, use_bezier: bool = True, speed_multiplier: float = 1.0) -> None:
+        """Déplacer la souris avec mouvement naturel"""
+        with self._movement_lock:
+            try:
+                current_x, current_y = pyautogui.position()
+                
+                # Ajouter imprécision humaine
+                target_x = x + random.randint(-1, 1)
+                target_y = y + random.randint(-1, 1)
+                
+                distance = math.sqrt((target_x - current_x)**2 + (target_y - current_y)**2)
+                
+                if distance < 5:
+                    return
+                elif distance < 50:
+                    pyautogui.moveTo(target_x, target_y, duration=0)
+                elif use_bezier and distance > 100:
+                    self._move_bezier(current_x, current_y, target_x, target_y, speed_multiplier)
+                else:
+                    duration = min(0.3, distance / 3000) * speed_multiplier
+                    pyautogui.moveTo(target_x, target_y, duration=duration)
+                
+                # Pause naturelle
+                time.sleep(random.uniform(0.01, 0.03) * speed_multiplier)
+                
+            except Exception as e:
+                self.logger.error(f"Erreur mouvement souris: {e}")
     
     def _move_bezier(self, start_x: int, start_y: int, end_x: int, end_y: int, speed_multiplier: float):
-        """Mouvement en courbe de Bézier"""
+        """Mouvement en courbe de Bézier plus naturel"""
+        # Points de contrôle avec variabilité
         mid_x = (start_x + end_x) / 2
         mid_y = (start_y + end_y) / 2
-        control_x = mid_x + random.randint(-20, 20)
-        control_y = mid_y + random.randint(-20, 20)
         
-        for t in np.linspace(0, 1, Constants.BEZIER_STEPS):
+        # Variation du point de contrôle basée sur la distance
+        distance = math.sqrt((end_x - start_x)**2 + (end_y - start_y)**2)
+        control_variance = min(50, distance / 10)
+        
+        control_x = mid_x + random.uniform(-control_variance, control_variance)
+        control_y = mid_y + random.uniform(-control_variance, control_variance)
+        
+        steps = max(5, int(distance / 50))
+        
+        for t in np.linspace(0, 1, steps):
             x = (1-t)**2 * start_x + 2*(1-t)*t * control_x + t**2 * end_x
             y = (1-t)**2 * start_y + 2*(1-t)*t * control_y + t**2 * end_y
             pyautogui.moveTo(int(x), int(y), duration=0)
-            time.sleep(0.001 * speed_multiplier)
+            time.sleep(0.002 * speed_multiplier)
     
-    def click(self, x: int, y: int):
-        """Clic simple"""
-        self.move_to(x, y, speed_multiplier=0.5)
-        pyautogui.click()
-        time.sleep(random.uniform(0.05, 0.1))
+    def click(self, x: int, y: int) -> None:
+        """Clic simple avec validation"""
+        try:
+            self.move_to(x, y, speed_multiplier=0.8)
+            pyautogui.click()
+            time.sleep(random.uniform(0.05, 0.15))
+        except Exception as e:
+            self.logger.error(f"Erreur clic: {e}")
     
-    def shift_click(self, x: int, y: int):
-        """Clic avec Shift"""
-        self.move_to(x, y, speed_multiplier=0.5)
-        if not keyboard.is_pressed('shift'):
-            pyautogui.keyDown('shift')
-            time.sleep(0.01)
-        pyautogui.click()
-        time.sleep(random.uniform(0.05, 0.1))
+    def shift_click(self, x: int, y: int) -> None:
+        """Clic avec Shift maintenu"""
+        try:
+            self.move_to(x, y, speed_multiplier=0.8)
+            
+            shift_already_pressed = keyboard.is_pressed('shift')
+            if not shift_already_pressed:
+                pyautogui.keyDown('shift')
+                time.sleep(0.01)
+            
+            pyautogui.click()
+            time.sleep(random.uniform(0.05, 0.15))
+            
+            if not shift_already_pressed:
+                pyautogui.keyUp('shift')
+                
+        except Exception as e:
+            self.logger.error(f"Erreur shift-clic: {e}")
 
-class TemplateService:
-    """Service pour la gestion des templates"""
-    def __init__(self, event_manager: EventManager, logger: Logger):
-        self.templates: List[Template] = []
-        self.event_manager = event_manager
+class TemplateManager:
+    """Gestionnaire de templates avec validation et cache"""
+    
+    def __init__(self, event_bus: EventBus, logger: BotLogger):
+        self._templates: List[Template] = []
+        self._template_cache: Dict[str, np.ndarray] = {}
+        self.event_bus = event_bus
         self.logger = logger
+        self._lock = threading.RLock()
+    
+    @property
+    def templates(self) -> List[Template]:
+        """Obtenir la liste des templates (lecture seule)"""
+        with self._lock:
+            return self._templates.copy()
     
     def add_template(self, template: Template) -> bool:
-        """Ajouter un template"""
-        if not os.path.exists(template.image_path):
-            self.logger.error(f"Fichier template introuvable: {template.image_path}")
+        """Ajouter un template avec validation"""
+        try:
+            if not template.exists:
+                raise TemplateError(f"Fichier template introuvable: {template.image_path}")
+            
+            # Tester le chargement de l'image
+            self._load_template_image(template)
+            
+            with self._lock:
+                base_name = template.name
+                counter = 1
+                while any(t.name == template.name for t in self._templates):
+                    template.name = f"{base_name}{counter}"
+                    counter += 1
+                
+                self._templates.append(template)
+            
+            self.logger.success(f"Template '{template.name}' ajouté")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Erreur ajout template: {e}")
             return False
-        
-        self.templates.append(template)
-        self.logger.success(f"Template '{template.name}' ajouté")
-        return True
     
-    def remove_template(self, template: Template):
+    def remove_template(self, template: Template) -> bool:
         """Supprimer un template"""
-        if template in self.templates:
-            self.templates.remove(template)
-            self.logger.info(f"Template '{template.name}' supprimé")
+        with self._lock:
+            if template in self._templates:
+                self._templates.remove(template)
+                # Nettoyer le cache
+                cache_key = template.image_path
+                self._template_cache.pop(cache_key, None)
+                
+                self.logger.info(f"Template '{template.name}' supprimé")
+                return True
+        return False
     
     def get_enabled_templates(self) -> List[Template]:
         """Obtenir les templates actifs"""
-        return [t for t in self.templates if t.enabled]
+        with self._lock:
+            return [t for t in self._templates if t.enabled and t.exists]
+    
+    def get_template_image(self, template: Template) -> Optional[np.ndarray]:
+        """Obtenir l'image d'un template avec cache"""
+        cache_key = template.image_path
+        
+        if cache_key in self._template_cache:
+            return self._template_cache[cache_key]
+        
+        try:
+            image = self._load_template_image(template)
+            self._template_cache[cache_key] = image
+            return image
+        except Exception as e:
+            self.logger.error(f"Erreur chargement image template {template.name}: {e}")
+            return None
+    
+    def _load_template_image(self, template: Template) -> np.ndarray:
+        """Charger l'image d'un template"""
+        image = cv2.imread(template.image_path)
+        if image is None:
+            raise TemplateError(f"Impossible de charger l'image: {template.image_path}")
+        return image
+    
+    def clear_cache(self):
+        """Vider le cache des images"""
+        self._template_cache.clear()
+        self.logger.info("Cache des templates vidé")
     
     def clear_all(self):
         """Supprimer tous les templates"""
-        self.templates.clear()
+        with self._lock:
+            self._templates.clear()
+            self.clear_cache()
 
 class DetectionService:
     """Service pour la détection d'images"""
-    def __init__(self, config: BotConfig, template_service: TemplateService, 
-                 event_manager: EventManager, logger: Logger):
+    
+    def __init__(self, config: BotConfig, template_manager: TemplateManager, 
+                 event_bus: EventBus, logger: BotLogger):
         self.config = config
-        self.template_service = template_service
-        self.event_manager = event_manager
+        self.template_manager = template_manager
+        self.event_bus = event_bus
         self.logger = logger
         
         # Système anti-doublons
@@ -487,46 +738,55 @@ class DetectionService:
     
     def capture_screen(self) -> np.ndarray:
         """Capturer l'écran"""
-        if self.config.detection_region:
-            x, y, w, h = self.config.detection_region
-            screenshot = ImageGrab.grab(bbox=(x, y, x + w, y + h))
-        else:
-            screenshot = ImageGrab.grab()
-        
-        screenshot = np.array(screenshot)
-        return cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR)
+        try:
+            if self.config.detection_region:
+                x, y, w, h = self.config.detection_region
+                screenshot = ImageGrab.grab(bbox=(x, y, x + w, y + h))
+            else:
+                screenshot = ImageGrab.grab()
+            
+            screenshot = np.array(screenshot)
+            return cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR)
+        except Exception as e:
+            self.logger.error(f"Erreur capture écran: {e}")
+            return np.array([])
     
     def detect_template(self, screenshot: np.ndarray, template: Template) -> List[Tuple[int, int]]:
         """Détecter un template dans l'écran"""
-        if not template.enabled:
+        if not template.enabled or screenshot.size == 0:
             return []
         
-        template_img = cv2.imread(template.image_path)
+        template_img = self.template_manager.get_template_image(template)
         if template_img is None:
             return []
         
-        result = cv2.matchTemplate(screenshot, template_img, cv2.TM_CCOEFF_NORMED)
-        locations = np.where(result >= template.threshold)
-        matches = []
-        
-        h, w = template_img.shape[:2]
-        
-        for pt in zip(*locations[::-1]):
-            center_x = pt[0] + w // 2 + template.click_offset_x
-            center_y = pt[1] + h // 2 + template.click_offset_y
+        try:
+            result = cv2.matchTemplate(screenshot, template_img, cv2.TM_CCOEFF_NORMED)
+            locations = np.where(result >= template.threshold)
+            matches = []
             
-            if self.config.detection_region:
-                center_x += self.config.detection_region[0]
-                center_y += self.config.detection_region[1]
+            h, w = template_img.shape[:2]
             
-            if self.is_position_valid(center_x, center_y):
-                matches.append((center_x, center_y))
-        
-        if matches:
-            matches = self._remove_duplicates(matches)
-            matches = self._sort_by_distance(matches)
-        
-        return matches
+            for pt in zip(*locations[::-1]):
+                center_x = pt[0] + w // 2 + template.click_offset_x
+                center_y = pt[1] + h // 2 + template.click_offset_y
+                
+                if self.config.detection_region:
+                    center_x += self.config.detection_region[0]
+                    center_y += self.config.detection_region[1]
+                
+                if self.is_position_valid(center_x, center_y):
+                    matches.append((center_x, center_y))
+            
+            if matches:
+                matches = self._remove_duplicates(matches)
+                matches = self._sort_by_distance(matches)
+            
+            return matches
+            
+        except Exception as e:
+            self.logger.error(f"Erreur détection template {template.name}: {e}")
+            return []
     
     def _remove_duplicates(self, points: List[Tuple[int, int]], min_distance: int = 30) -> List[Tuple[int, int]]:
         """Supprimer les points trop proches"""
@@ -552,55 +812,63 @@ class DetectionService:
         if len(points) <= 1:
             return points
         
-        current_x, current_y = pyautogui.position()
-        sorted_points = []
-        remaining = points.copy()
-        current_pos = (current_x, current_y)
-        
-        while remaining:
-            min_dist = float('inf')
-            closest_point = None
-            closest_idx = -1
+        try:
+            current_x, current_y = pyautogui.position()
+            sorted_points = []
+            remaining = points.copy()
+            current_pos = (current_x, current_y)
             
-            for idx, point in enumerate(remaining):
-                dist = math.sqrt((point[0] - current_pos[0])**2 + 
-                               (point[1] - current_pos[1])**2)
-                if dist < min_dist:
-                    min_dist = dist
-                    closest_point = point
-                    closest_idx = idx
+            while remaining:
+                min_dist = float('inf')
+                closest_point = None
+                closest_idx = -1
+                
+                for idx, point in enumerate(remaining):
+                    dist = math.sqrt((point[0] - current_pos[0])**2 + 
+                                   (point[1] - current_pos[1])**2)
+                    if dist < min_dist:
+                        min_dist = dist
+                        closest_point = point
+                        closest_idx = idx
+                
+                if closest_point:
+                    sorted_points.append(closest_point)
+                    remaining.pop(closest_idx)
+                    current_pos = closest_point
             
-            if closest_point:
-                sorted_points.append(closest_point)
-                remaining.pop(closest_idx)
-                current_pos = closest_point
-        
-        return sorted_points
+            return sorted_points
+        except Exception as e:
+            self.logger.error(f"Erreur tri par distance: {e}")
+            return points
     
     def detect_all(self) -> List[Tuple[Template, List[Tuple[int, int]]]]:
         """Détecter tous les templates actifs"""
         screenshot = self.capture_screen()
+        if screenshot.size == 0:
+            return []
+            
         results = []
         
-        templates = sorted(self.template_service.get_enabled_templates(), 
+        templates = sorted(self.template_manager.get_enabled_templates(), 
                          key=lambda t: t.priority, reverse=True)
         
         for template in templates:
             matches = self.detect_template(screenshot, template)
             if matches:
                 results.append((template, matches))
-                self.event_manager.emit(EventType.TEMPLATE_DETECTED, 
-                                      {'template': template, 'matches': matches})
+                self.event_bus.emit(EventType.TEMPLATE_DETECTED, 
+                                  {'template': template, 'matches': matches})
         
         return results
 
 class ActionService:
     """Service pour l'exécution des actions"""
+    
     def __init__(self, mouse_service: MouseService, detection_service: DetectionService,
-                 event_manager: EventManager, logger: Logger):
+                 event_bus: EventBus, logger: BotLogger):
         self.mouse_service = mouse_service
         self.detection_service = detection_service
-        self.event_manager = event_manager
+        self.event_bus = event_bus
         self.logger = logger
         
         self.action_queue = queue.Queue()
@@ -623,8 +891,8 @@ class ActionService:
             self.mouse_service.click(x, y)
         
         self.stats['clicks'] += 1
-        self.event_manager.emit(EventType.CLICK_EXECUTED, 
-                              {'template': template, 'position': position})
+        self.event_bus.emit(EventType.CLICK_EXECUTED, 
+                          {'template': template, 'position': position})
     
     def clear_queue(self):
         """Vider la queue d'actions"""
@@ -638,171 +906,168 @@ class ActionService:
         """Réinitialiser les statistiques"""
         self.stats = {'clicks': 0, 'detections': 0, 'start_time': time.time()}
 
-class ConfigService:
-    """Service pour la gestion de la configuration"""
-    def __init__(self, logger: Logger):
-        self.logger = logger
-        self._ensure_folders()
-    
-    def _ensure_folders(self):
-        """Créer les dossiers nécessaires"""
-        if not os.path.exists(Constants.TEMPLATES_FOLDER):
-            os.makedirs(Constants.TEMPLATES_FOLDER)
-    
-    def save_config(self, config: BotConfig, templates: List[Template]):
-        """Sauvegarder la configuration"""
-        data = {
-            'config': config.to_dict(),
-            'templates': [t.to_dict() for t in templates]
-        }
-        
-        try:
-            with open(Constants.CONFIG_FILE, 'w') as f:
-                json.dump(data, f, indent=2)
-            self.logger.success("Configuration sauvegardée")
-            return True
-        except Exception as e:
-            self.logger.error(f"Erreur sauvegarde: {e}")
-            return False
-    
-    def load_config(self) -> Tuple[BotConfig, List[Template]]:
-        """Charger la configuration"""
-        config = BotConfig()
-        templates = []
-        
-        if not os.path.exists(Constants.CONFIG_FILE):
-            return config, templates
-        
-        try:
-            with open(Constants.CONFIG_FILE, 'r') as f:
-                data = json.load(f)
-            
-            if 'config' in data:
-                config = BotConfig.from_dict(data['config'])
-            
-            if 'templates' in data:
-                templates = [Template.from_dict(t) for t in data['templates']]
-                # Filtrer les templates avec fichiers manquants
-                templates = [t for t in templates if os.path.exists(t.image_path)]
-            
-            self.logger.success(f"Configuration chargée: {len(templates)} templates")
-            
-        except Exception as e:
-            self.logger.error(f"Erreur chargement: {e}")
-        
-        return config, templates
-
 # ================== MAIN CONTROLLER ==================
 
 class BotController:
-    """Contrôleur principal du bot"""
-    def __init__(self):
-        # Système d'événements et logging
-        self.event_manager = EventManager()
-        self.logger = Logger(self.event_manager)
+    """Contrôleur principal avec gestion d'état améliorée"""
+    
+    def __init__(self, app_config: AppConfig):
+        self.app_config = app_config
         
-        # Configuration et services
-        self.config = BotConfig()
-        self.config_service = ConfigService(self.logger)
+        # Initialisation des composants de base
+        self.event_bus = EventBus(logging.getLogger('PixelBot'))
+        self.logger = BotLogger(app_config, self.event_bus)
         
-        self.template_service = TemplateService(self.event_manager, self.logger)
-        self.mouse_service = MouseService(self.config)
-        self.detection_service = DetectionService(self.config, self.template_service, 
-                                                 self.event_manager, self.logger)
+        # Configuration
+        self.bot_config = BotConfig()
+        self.config_service = ConfigService(app_config, self.logger, self.event_bus)
+        
+        # Services
+        self.template_manager = TemplateManager(self.event_bus, self.logger)
+        self.mouse_service = MouseService(self.bot_config, self.logger)
+        self.detection_service = DetectionService(self.bot_config, self.template_manager, 
+                                                 self.event_bus, self.logger)
         self.action_service = ActionService(self.mouse_service, self.detection_service,
-                                           self.event_manager, self.logger)
+                                           self.event_bus, self.logger)
         self.screen_capture_service = ScreenCaptureService(self.logger)
         
         # État du bot
-        self.is_running = False
+        self._running = False
+        self._activated = False
+        self._threads: List[threading.Thread] = []
+        self._shutdown_event = threading.Event()
         self.pending_actions = []
-        self.threads = []
         
-        # Events Shift + Espace
-        self.last_shift_state = False
-        self.bot_activated = False  # Nouvel état : bot activé par SHIFT+ESPACE
-        self.shift_released = threading.Event()
-        
+        self._setup_event_handlers()
         self._setup_hotkeys()
         self._load_initial_config()
     
+    @property
+    def is_running(self) -> bool:
+        return self._running
+    
+    @property
+    def is_activated(self) -> bool:
+        return self._activated
+    
+    def _setup_event_handlers(self):
+        """Configurer les gestionnaires d'événements"""
+        self.event_bus.subscribe(EventType.CONFIG_LOADED, self._on_config_loaded)
+    
+    def _on_config_loaded(self, data: Dict[str, Any]):
+        """Gestionnaire de chargement de configuration"""
+        if data and 'config' in data:
+            self.bot_config = data['config']
+            self.mouse_service.config = self.bot_config
+            self.detection_service.config = self.bot_config
+    
     def _setup_hotkeys(self):
         """Configurer les raccourcis clavier"""
-        keyboard.add_hotkey(Constants.HOTKEY_TOGGLE, self.toggle_bot)
-        keyboard.add_hotkey(Constants.HOTKEY_STOP, self.stop_bot)
-        keyboard.add_hotkey(Constants.HOTKEY_CAPTURE, self.capture_template)
+        try:
+            keyboard.add_hotkey(self.app_config.HOTKEY_TOGGLE, self.toggle_bot)
+            keyboard.add_hotkey(self.app_config.HOTKEY_STOP, self.stop_bot)
+            keyboard.add_hotkey(self.app_config.HOTKEY_CAPTURE, self.capture_template)
+        except Exception as e:
+            self.logger.error(f"Erreur configuration hotkeys: {e}")
     
     def _load_initial_config(self):
         """Charger la configuration initiale"""
-        config, templates = self.config_service.load_config()
-        self.config = config
-        
-        for template in templates:
-            self.template_service.add_template(template)
-        
-        # Appliquer la région de détection
-        if self.config.detection_region:
-            self.detection_service.config = self.config
+        try:
+            bot_config, templates = self.config_service.load_config()
+            self.bot_config = bot_config
+            
+            for template in templates:
+                self.template_manager.add_template(template)
+                
+        except Exception as e:
+            self.logger.error(f"Erreur configuration: {e}")
     
-    def toggle_bot(self):
-        """Démarrer/Arrêter le bot"""
-        if self.is_running:
-            self.stop_bot()
+    def start_bot(self) -> bool:
+        """Démarrer le bot avec validation"""
+        if self._running:
+            self.logger.warning("Bot déjà en cours d'exécution")
+            return False
+        
+        enabled_templates = self.template_manager.get_enabled_templates()
+        if not enabled_templates:
+            self.logger.error("Aucun template actif!")
+            return False
+        
+        try:
+            self._running = True
+            self._activated = False
+            self._shutdown_event.clear()
+            self.pending_actions = []
+            
+            self.detection_service.reset_positions()
+            self.action_service.reset_stats()
+            
+            mode_text = "SHIFT+ESPACE" if self.bot_config.mode == BotMode.SHIFT else "AUTO"
+            self.logger.success(f"Bot démarré en mode {mode_text}")
+            self.event_bus.emit(EventType.BOT_STARTED)
+            
+            # Démarrer les threads de travail
+            self._start_worker_threads()
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Erreur démarrage bot: {e}")
+            self._running = False
+            return False
+    
+    def stop_bot(self) -> bool:
+        """Arrêter le bot proprement"""
+        if not self._running:
+            return True
+        
+        try:
+            self._running = False
+            self._activated = False
+            self._shutdown_event.set()
+            
+            self.action_service.clear_queue()
+            
+            # Attendre les threads
+            for thread in self._threads:
+                if thread.is_alive():
+                    thread.join(timeout=2.0)
+            
+            self._threads.clear()
+            
+            self.logger.success("Bot arrêté")
+            self._print_stats()
+            self.event_bus.emit(EventType.BOT_STOPPED)
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Erreur arrêt bot: {e}")
+            return False
+    
+    def toggle_bot(self) -> bool:
+        """Basculer l'état du bot"""
+        if self._running:
+            return self.stop_bot()
         else:
-            self.start_bot()
+            return self.start_bot()
     
-    def start_bot(self):
-        """Démarrer le bot"""
-        if self.is_running:
-            return
-        
-        if not self.template_service.get_enabled_templates():
-            self.logger.warning("Aucun template actif!")
-            return
-        
-        self.detection_service.reset_positions()
-        self.action_service.reset_stats()
-        
-        self.is_running = True
-        self.bot_activated = False  # Réinitialiser l'état d'activation
-        self.shift_released.clear()
-        self.pending_actions = []
-        
-        mode_text = "SHIFT+ESPACE" if self.config.mode == BotMode.SHIFT else "AUTO"
-        self.logger.success(f"Bot démarré en mode {mode_text}")
-        
-        # Démarrer les threads
-        self.threads = [
-            threading.Thread(target=self._detection_loop, daemon=True),
-            threading.Thread(target=self._action_loop, daemon=True)
+    def _start_worker_threads(self):
+        """Démarrer les threads de travail"""
+        self._threads = [
+            threading.Thread(target=self._detection_worker, daemon=True, name="Detection"),
+            threading.Thread(target=self._action_worker, daemon=True, name="Action")
         ]
         
-        if self.config.mode == BotMode.SHIFT:
-            self.threads.append(threading.Thread(target=self._shift_monitor, daemon=True))
+        if self.bot_config.mode == BotMode.SHIFT:
+            self._threads.append(
+                threading.Thread(target=self._shift_monitor, daemon=True, name="ShiftMonitor")
+            )
         
-        for thread in self.threads:
+        for thread in self._threads:
             thread.start()
-        
-        self.event_manager.emit(EventType.BOT_STARTED)
     
-    def stop_bot(self):
-        """Arrêter le bot"""
-        if not self.is_running:
-            return
-        
-        self.is_running = False
-        self.bot_activated = False  # Réinitialiser l'état d'activation
-        self.shift_released.set()
-        self.action_service.clear_queue()
-        
-        self.logger.success("Bot arrêté")
-        self._print_stats()
-        
-        self.event_manager.emit(EventType.BOT_STOPPED)
-    
-    def _detection_loop(self):
-        """Boucle de détection"""
-        while self.is_running:
+    def _detection_worker(self):
+        """Worker de détection"""
+        while self._running and not self._shutdown_event.is_set():
             try:
                 detections = self.detection_service.detect_all()
                 
@@ -816,62 +1081,27 @@ class BotController:
                         self.pending_actions = all_detections
                         self.action_service.stats['detections'] += len(all_detections)
                         
-                        if self.config.mode == BotMode.SHIFT:
+                        if self.bot_config.mode == BotMode.SHIFT:
                             self.logger.info(f"{len(all_detections)} cibles - En attente SHIFT + ESPACE")
                         else:
                             # Mode AUTO - ajouter immédiatement
                             for template, position in all_detections:
                                 self.action_service.add_action(template, position)
                 
-                time.sleep(random.uniform(Constants.DETECTION_PAUSE_MIN, 
-                                        Constants.DETECTION_PAUSE_MAX))
+                time.sleep(random.uniform(self.app_config.DETECTION_PAUSE_MIN, 
+                                        self.app_config.DETECTION_PAUSE_MAX))
                 
             except Exception as e:
                 self.logger.error(f"Erreur détection: {e}")
     
-    def _shift_monitor(self):
-        """Surveillance de la combinaison Shift + Espace"""
-        while self.is_running and self.config.mode == BotMode.SHIFT:
-            try:
-                shift_pressed = keyboard.is_pressed('shift')
-                space_pressed = keyboard.is_pressed('space')
-                shift_space_combo = shift_pressed and space_pressed
-                
-                # Déclenchement : SHIFT + ESPACE pressés et bot pas encore activé
-                if shift_space_combo and not self.bot_activated:
-                    self.logger.info("SHIFT + ESPACE activé - Exécution")
-                    self.bot_activated = True
-                    self.shift_released.clear()
-                    self.event_manager.emit(EventType.SHIFT_PRESSED)
-                    
-                    # Ajouter actions à la queue
-                    for template, position in self.pending_actions:
-                        self.action_service.add_action(template, position)
-                    self.pending_actions = []
-                
-                # Arrêt : SHIFT relâché (peu importe l'état d'ESPACE) et bot était activé
-                elif not shift_pressed and self.bot_activated:
-                    self.logger.info("SHIFT relâché - Arrêt")
-                    self.bot_activated = False
-                    self.shift_released.set()
-                    self.action_service.clear_queue()
-                    self.detection_service.reset_positions()
-                    self.event_manager.emit(EventType.SHIFT_RELEASED)
-                
-                self.last_shift_state = shift_pressed
-                time.sleep(0.01)
-                
-            except Exception as e:
-                self.logger.error(f"Erreur monitoring Shift+Espace: {e}")
-    
-    def _action_loop(self):
-        """Boucle d'exécution des actions"""
-        while self.is_running:
+    def _action_worker(self):
+        """Worker d'exécution des actions"""
+        while self._running and not self._shutdown_event.is_set():
             try:
                 # Vérifications mode SHIFT
-                if self.config.mode == BotMode.SHIFT:
+                if self.bot_config.mode == BotMode.SHIFT:
                     # Vérifier que SHIFT est pressé ET que le bot est activé
-                    if not keyboard.is_pressed('shift') or not self.bot_activated or self.shift_released.is_set():
+                    if not keyboard.is_pressed('shift') or not self._activated or self._shutdown_event.is_set():
                         time.sleep(0.01)
                         continue
                 
@@ -882,12 +1112,12 @@ class BotController:
                     continue
                 
                 # Vérification finale avant clic
-                if self.config.mode == BotMode.SHIFT:
-                    if not keyboard.is_pressed('shift') or not self.bot_activated or self.shift_released.is_set():
+                if self.bot_config.mode == BotMode.SHIFT:
+                    if not keyboard.is_pressed('shift') or not self._activated or self._shutdown_event.is_set():
                         continue
                 
                 # Exécuter le clic
-                use_shift = (self.config.mode == BotMode.SHIFT and self.bot_activated) or keyboard.is_pressed('shift')
+                use_shift = (self.bot_config.mode == BotMode.SHIFT and self._activated) or keyboard.is_pressed('shift')
                 self.action_service.execute_click(template, position, use_shift)
                 
                 # Pause entre actions
@@ -895,6 +1125,38 @@ class BotController:
                 
             except Exception as e:
                 self.logger.error(f"Erreur action: {e}")
+    
+    def _shift_monitor(self):
+        """Surveillance de la combinaison Shift + Espace"""
+        while self._running and self.bot_config.mode == BotMode.SHIFT and not self._shutdown_event.is_set():
+            try:
+                shift_pressed = keyboard.is_pressed('shift')
+                space_pressed = keyboard.is_pressed('space')
+                shift_space_combo = shift_pressed and space_pressed
+                
+                # Déclenchement : SHIFT + ESPACE pressés et bot pas encore activé
+                if shift_space_combo and not self._activated:
+                    self.logger.info("SHIFT + ESPACE activé - Exécution")
+                    self._activated = True
+                    self.event_bus.emit(EventType.SHIFT_PRESSED)
+                    
+                    # Ajouter actions à la queue
+                    for template, position in self.pending_actions:
+                        self.action_service.add_action(template, position)
+                    self.pending_actions = []
+                
+                # Arrêt : SHIFT relâché (peu importe l'état d'ESPACE) et bot était activé
+                elif not shift_pressed and self._activated:
+                    self.logger.info("SHIFT relâché - Arrêt")
+                    self._activated = False
+                    self.action_service.clear_queue()
+                    self.detection_service.reset_positions()
+                    self.event_bus.emit(EventType.SHIFT_RELEASED)
+                
+                time.sleep(0.01)
+                
+            except Exception as e:
+                self.logger.error(f"Erreur monitoring Shift+Espace: {e}")
     
     def capture_template(self):
         """Capturer un nouveau template"""
@@ -909,7 +1171,7 @@ class BotController:
         
         # Générer nom de fichier
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        filename = f"{Constants.TEMPLATES_FOLDER}/template_{timestamp}.png"
+        filename = f"{self.app_config.TEMPLATES_FOLDER}/template_{timestamp}.png"
         
         # Capturer la zone
         if self.screen_capture_service.capture_area(x1, y1, x2, y2, filename):
@@ -917,12 +1179,10 @@ class BotController:
             
             # Optionnel: Demander si on veut ajouter le template immédiatement
             try:
-                import tkinter.messagebox as msgbox
-                if msgbox.askyesno("Ajouter Template", "Voulez-vous ajouter ce template à la liste ?"):
-                    name = simpledialog.askstring("Nom du template", "Entrez un nom:")
-                    if name:
-                        template = Template(name=name, image_path=filename)
-                        self.template_service.add_template(template)
+                name = simpledialog.askstring("Nom du template", "Entrez un nom:")
+                if name:
+                    template = Template(name=name, image_path=filename)
+                    self.template_manager.add_template(template)
             except:
                 pass
     
@@ -939,13 +1199,13 @@ class BotController:
     
     def set_detection_region(self, x: int, y: int, width: int, height: int):
         """Définir la région de détection"""
-        self.config.detection_region = (x, y, width, height)
-        self.detection_service.config = self.config
+        self.bot_config.detection_region = (x, y, width, height)
+        self.detection_service.config = self.bot_config
         self.logger.success(f"Zone définie: {width}x{height} à ({x},{y})")
     
-    def save_config(self):
+    def save_config(self) -> bool:
         """Sauvegarder la configuration"""
-        self.config_service.save_config(self.config, self.template_service.templates)
+        return self.config_service.save_config(self.bot_config, self.template_manager.templates)
     
     def _print_stats(self):
         """Afficher les statistiques"""
@@ -956,15 +1216,21 @@ class BotController:
             print(f"  Durée: {duration:.1f}s")
             print(f"  Détections: {stats['detections']}")
             print(f"  Clics: {stats['clicks']}")
+    
+    def shutdown(self):
+        """Arrêt complet de l'application"""
+        self.stop_bot()
+        self.logger.info("Arrêt de l'application")
 
 # ================== GUI ==================
 
 class BotGUI:
     """Interface graphique moderne et modulaire"""
+    
     def __init__(self, controller: BotController):
         self.controller = controller
         self.root = tk.Tk()
-        self.mode_var = tk.StringVar(value=self.controller.config.mode.value)
+        self.mode_var = tk.StringVar(value=self.controller.bot_config.mode.value)
         
         self._setup_window()
         self._setup_ui()
@@ -973,24 +1239,30 @@ class BotGUI:
     
     def _setup_window(self):
         """Configurer la fenêtre"""
-        self.root.title("Pixel Bot v2.0 - Refactorisé")
-        self.root.geometry(f"{Constants.WINDOW_WIDTH}x{Constants.WINDOW_HEIGHT}")
+        self.root.title("Pixel Bot v3.0 - Architecture Refactorisée")
+        self.root.geometry(f"{self.controller.app_config.WINDOW_WIDTH}x{self.controller.app_config.WINDOW_HEIGHT}")
+        self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
+        
+        # Configurer la grille principale
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
     
     def _setup_ui(self):
         """Créer l'interface utilisateur"""
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        main_frame.columnconfigure(0, weight=1)
         
         self._create_mode_section(main_frame)
+        self._create_control_section(main_frame)
         self._create_templates_section(main_frame)
-        self._create_control_buttons(main_frame)
         self._create_action_buttons(main_frame)
         self._create_status_bar(main_frame)
     
     def _create_mode_section(self, parent):
         """Section mode de fonctionnement"""
         mode_frame = ttk.LabelFrame(parent, text="Mode de fonctionnement", padding="10")
-        mode_frame.grid(row=0, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
+        mode_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         
         ttk.Radiobutton(mode_frame, text="🎮 Mode SHIFT + ESPACE", 
                        variable=self.mode_var, value="shift",
@@ -999,137 +1271,229 @@ class BotGUI:
                        variable=self.mode_var, value="auto",
                        command=self._update_mode).pack(anchor=tk.W)
         
-        # Description du mode SHIFT + ESPACE
-        shift_desc = ttk.Label(mode_frame, 
-                              text="🎮 SHIFT + ESPACE : Déclenche le bot | Lâcher SHIFT : Arrête le bot", 
-                              font=('Arial', 9), foreground='blue')
-        shift_desc.pack(anchor=tk.W, pady=(2, 0))
+        # Description
+        desc_text = "SHIFT + ESPACE : Déclenche le bot | Lâcher SHIFT : Arrête le bot"
+        ttk.Label(mode_frame, text=desc_text, font=('Arial', 9), 
+                 foreground='blue').pack(anchor=tk.W, pady=(5, 0))
+    
+    def _create_control_section(self, parent):
+        """Section contrôles"""
+        control_frame = ttk.LabelFrame(parent, text="Contrôles", padding="10")
+        control_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         
-        ttk.Label(mode_frame, text="✨ Interface de sélection visuelle comme l'outil de capture d'écran", 
-                 font=('Arial', 9), foreground='green').pack(anchor=tk.W, pady=(5, 0))
+        buttons_frame = ttk.Frame(control_frame)
+        buttons_frame.pack(fill=tk.X)
+        
+        ttk.Button(buttons_frame, text="📸 Capturer Template", 
+                  command=self._capture_template).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(buttons_frame, text="🎯 Définir Zone", 
+                  command=self._set_zone).pack(side=tk.LEFT, padx=5)
+        ttk.Button(buttons_frame, text="🔄 Reset Positions", 
+                  command=self._reset_positions).pack(side=tk.LEFT, padx=5)
+        
+        # Info zone de détection
+        if self.controller.bot_config.detection_region:
+            region = self.controller.bot_config.detection_region
+            zone_text = f"Zone actuelle: {region[2]}x{region[3]} à ({region[0]},{region[1]})"
+        else:
+            zone_text = "Zone: Écran complet"
+        
+        self.zone_label = ttk.Label(control_frame, text=zone_text, font=('Arial', 9))
+        self.zone_label.pack(pady=(5, 0))
     
     def _create_templates_section(self, parent):
         """Section templates"""
-        ttk.Label(parent, text="Templates", font=('Arial', 14, 'bold')).grid(row=1, column=0, sticky=tk.W, pady=(10, 5))
+        templates_frame = ttk.LabelFrame(parent, text="Templates", padding="10")
+        templates_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
+        templates_frame.columnconfigure(0, weight=1)
+        templates_frame.rowconfigure(1, weight=1)
         
-        self.templates_frame = ttk.Frame(parent)
-        self.templates_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
-    
-    def _create_control_buttons(self, parent):
-        """Boutons de contrôle"""
-        control_frame = ttk.Frame(parent)
-        control_frame.grid(row=3, column=0, columnspan=3, pady=10)
+        # Boutons templates
+        template_buttons = ttk.Frame(templates_frame)
+        template_buttons.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
         
-        ttk.Button(control_frame, text="Ajouter Template", command=self._add_template).pack(side=tk.LEFT, padx=5)
-        ttk.Button(control_frame, text="📸 Capturer Zone", command=self._capture_template).pack(side=tk.LEFT, padx=5)
-        ttk.Button(control_frame, text="🎯 Définir Zone", command=self._set_zone).pack(side=tk.LEFT, padx=5)
+        ttk.Button(template_buttons, text="➕ Ajouter Template", 
+                  command=self._add_template).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(template_buttons, text="🗂️ Charger depuis fichier", 
+                  command=self._load_config).pack(side=tk.LEFT, padx=5)
+        
+        # Liste templates avec scrollbar
+        list_frame = ttk.Frame(templates_frame)
+        list_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        list_frame.columnconfigure(0, weight=1)
+        list_frame.rowconfigure(0, weight=1)
+        
+        # Scrollable frame pour templates
+        canvas = tk.Canvas(list_frame)
+        scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=canvas.yview)
+        self.templates_frame = ttk.Frame(canvas)
+        
+        self.templates_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=self.templates_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
     
     def _create_action_buttons(self, parent):
         """Boutons d'action"""
         action_frame = ttk.Frame(parent)
-        action_frame.grid(row=4, column=0, columnspan=3, pady=20)
+        action_frame.grid(row=3, column=0, pady=(0, 10))
         
-        self.start_button = ttk.Button(action_frame, text="▶ Démarrer", command=self._toggle_bot)
-        self.start_button.pack(side=tk.LEFT, padx=5)
+        self.start_button = ttk.Button(action_frame, text="▶ Démarrer", 
+                                      command=self._toggle_bot, 
+                                      style="Accent.TButton")
+        self.start_button.pack(side=tk.LEFT, padx=(0, 10))
         
-        ttk.Button(action_frame, text="💾 Sauvegarder", command=self._save_config).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="📂 Charger", command=self._load_config).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="💾 Sauvegarder", 
+                  command=self._save_config).pack(side=tk.LEFT, padx=5)
+        
+        ttk.Button(action_frame, text="📊 Statistiques", 
+                  command=self._show_stats).pack(side=tk.LEFT, padx=5)
     
     def _create_status_bar(self, parent):
         """Barre de statut"""
-        status_frame = ttk.Frame(parent)
-        status_frame.grid(row=5, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0))
-        
-        self.status_var = tk.StringVar(value="Prêt - Architecture refactorisée")
-        status_bar = ttk.Label(status_frame, textvariable=self.status_var, relief=tk.SUNKEN)
-        status_bar.pack(fill=tk.X)
+        self.status_var = tk.StringVar(value="Prêt - Architecture refactorisée v3.0")
+        status_bar = ttk.Label(parent, textvariable=self.status_var, 
+                              relief=tk.SUNKEN, padding="5")
+        status_bar.grid(row=4, column=0, sticky=(tk.W, tk.E))
     
     def _bind_events(self):
         """Lier les événements"""
-        self.controller.event_manager.subscribe(EventType.STATUS_CHANGED, 
-                                              lambda msg: self.status_var.set(msg))
-        self.controller.event_manager.subscribe(EventType.BOT_STARTED, 
-                                              lambda _: self.start_button.config(text="⏸ Arrêter"))
-        self.controller.event_manager.subscribe(EventType.BOT_STOPPED, 
-                                              lambda _: self.start_button.config(text="▶ Démarrer"))
+        self.controller.event_bus.subscribe(EventType.STATUS_CHANGED, self._update_status)
+        self.controller.event_bus.subscribe(EventType.BOT_STARTED, 
+                                          lambda _: self.start_button.config(text="⏸ Arrêter"))
+        self.controller.event_bus.subscribe(EventType.BOT_STOPPED, 
+                                          lambda _: self.start_button.config(text="▶ Démarrer"))
+        self.controller.event_bus.subscribe(EventType.CONFIG_LOADED, 
+                                          lambda _: self._refresh_templates())
     
     def _refresh_templates(self):
         """Rafraîchir la liste des templates"""
+        # Nettoyer les widgets existants
         for widget in self.templates_frame.winfo_children():
             widget.destroy()
         
+        templates = self.controller.template_manager.templates
+        if not templates:
+            ttk.Label(self.templates_frame, 
+                     text="Aucun template. Cliquez sur 'Capturer Template' pour commencer.",
+                     foreground='gray').pack(pady=20)
+            return
+        
         # Headers
-        headers = ["Nom", "Fichier", "Actif", "Seuil", "Actions"]
-        for i, header in enumerate(headers):
-            ttk.Label(self.templates_frame, text=header, font=('Arial', 10, 'bold')).grid(row=0, column=i, padx=5)
+        header_frame = ttk.Frame(self.templates_frame)
+        header_frame.pack(fill=tk.X, pady=(0, 5))
+        
+        ttk.Label(header_frame, text="Nom", font=('Arial', 10, 'bold')).pack(side=tk.LEFT, padx=(0, 20))
+        ttk.Label(header_frame, text="Actif", font=('Arial', 10, 'bold')).pack(side=tk.LEFT, padx=(0, 20))
+        ttk.Label(header_frame, text="Seuil", font=('Arial', 10, 'bold')).pack(side=tk.LEFT, padx=(0, 20))
+        ttk.Label(header_frame, text="Actions", font=('Arial', 10, 'bold')).pack(side=tk.LEFT)
+        
+        # Separator
+        ttk.Separator(self.templates_frame, orient='horizontal').pack(fill=tk.X, pady=5)
         
         # Templates
-        for i, template in enumerate(self.controller.template_service.templates, 1):
-            self._create_template_row(i, template)
+        for template in templates:
+            self._create_template_row(template)
+        
+        # Mettre à jour la zone de détection
+        self._update_zone_label()
     
-    def _create_template_row(self, row: int, template: Template):
+    def _create_template_row(self, template: Template):
         """Créer une ligne de template"""
-        ttk.Label(self.templates_frame, text=template.name).grid(row=row, column=0, padx=5)
-        ttk.Label(self.templates_frame, text=os.path.basename(template.image_path)).grid(row=row, column=1, padx=5)
+        row_frame = ttk.Frame(self.templates_frame)
+        row_frame.pack(fill=tk.X, pady=2)
+        
+        # Nom du template (avec indicateur d'existence)
+        name_text = template.name
+        if not template.exists:
+            name_text += " ❌"
+        
+        name_label = ttk.Label(row_frame, text=name_text, width=20)
+        name_label.pack(side=tk.LEFT, padx=(0, 20))
         
         # Checkbox actif
-        var = tk.BooleanVar(value=template.enabled)
-        var.trace('w', lambda *args: setattr(template, 'enabled', var.get()))
-        ttk.Checkbutton(self.templates_frame, variable=var).grid(row=row, column=2, padx=5)
+        enabled_var = tk.BooleanVar(value=template.enabled)
+        enabled_var.trace('w', lambda *args: setattr(template, 'enabled', enabled_var.get()))
+        ttk.Checkbutton(row_frame, variable=enabled_var).pack(side=tk.LEFT, padx=(0, 30))
         
         # Seuil
-        threshold_var = tk.StringVar(value=str(template.threshold))
-        threshold_entry = ttk.Entry(self.templates_frame, textvariable=threshold_var, width=5)
-        threshold_entry.grid(row=row, column=3, padx=5)
+        threshold_var = tk.StringVar(value=f"{template.threshold:.2f}")
+        threshold_entry = ttk.Entry(row_frame, textvariable=threshold_var, width=8)
+        threshold_entry.pack(side=tk.LEFT, padx=(0, 20))
         threshold_var.trace('w', lambda *args: self._update_threshold(template, threshold_var))
         
-        # Bouton supprimer
-        ttk.Button(self.templates_frame, text="❌", 
-                  command=lambda: self._remove_template(template)).grid(row=row, column=4, padx=5)
+        # Boutons d'action
+        actions_frame = ttk.Frame(row_frame)
+        actions_frame.pack(side=tk.LEFT)
+        
+        ttk.Button(actions_frame, text="🗑️", width=3,
+                  command=lambda: self._remove_template(template)).pack(side=tk.LEFT, padx=2)
+        
+        if template.exists:
+            ttk.Button(actions_frame, text="👁️", width=3,
+                      command=lambda: self._preview_template(template)).pack(side=tk.LEFT, padx=2)
     
     def _update_threshold(self, template: Template, var: tk.StringVar):
         """Mettre à jour le seuil"""
         try:
-            template.threshold = float(var.get())
+            value = float(var.get())
+            if 0.0 <= value <= 1.0:
+                template.threshold = value
         except ValueError:
             pass
+    
+    def _preview_template(self, template: Template):
+        """Prévisualiser un template"""
+        try:
+            img = Image.open(template.image_path)
+            img.show()
+        except Exception as e:
+            messagebox.showerror("Erreur", f"Impossible d'ouvrir l'image: {e}")
     
     def _add_template(self):
         """Ajouter un template"""
         filename = filedialog.askopenfilename(
             title="Sélectionner un template",
-            initialdir=Constants.TEMPLATES_FOLDER,
+            initialdir=str(self.controller.app_config.TEMPLATES_FOLDER),
             filetypes=[("Images", "*.png *.jpg *.jpeg")]
         )
         
         if filename:
-            name = simpledialog.askstring("Nom", "Nom du template:")
+            name = simpledialog.askstring("Nom du template", "Nom du template:")
             if name:
                 template = Template(name=name, image_path=filename)
-                if self.controller.template_service.add_template(template):
+                if self.controller.template_manager.add_template(template):
                     self._refresh_templates()
     
+    def _remove_template(self, template: Template):
+        """Supprimer un template"""
+        if messagebox.askyesno("Confirmation", f"Supprimer le template '{template.name}' ?"):
+            self.controller.template_manager.remove_template(template)
+            self._refresh_templates()
+    
     def _capture_template(self):
-        """Capturer un template avec interface graphique"""
+        """Capturer un template"""
         self.controller.capture_template()
         self._refresh_templates()
     
     def _set_zone(self):
-        """Définir la zone de détection avec interface graphique"""
+        """Définir la zone de détection"""
         self.controller.set_detection_region_interactive()
+        self._update_zone_label()
     
     def _reset_positions(self):
         """Réinitialiser les positions"""
         self.controller.detection_service.reset_positions()
     
-    def _remove_template(self, template: Template):
-        """Supprimer un template"""
-        self.controller.template_service.remove_template(template)
-        self._refresh_templates()
-    
     def _update_mode(self):
         """Mettre à jour le mode"""
-        self.controller.config.mode = BotMode(self.mode_var.get())
+        self.controller.bot_config.mode = BotMode(self.mode_var.get())
         if self.controller.is_running:
             self.controller.stop_bot()
             time.sleep(0.5)
@@ -1141,41 +1505,111 @@ class BotGUI:
     
     def _save_config(self):
         """Sauvegarder config"""
-        self.controller.save_config()
+        if self.controller.save_config():
+            messagebox.showinfo("Succès", "Configuration sauvegardée!")
     
     def _load_config(self):
         """Charger config"""
         self.controller._load_initial_config()
-        self.mode_var.set(self.controller.config.mode.value)
+        self.mode_var.set(self.controller.bot_config.mode.value)
         self._refresh_templates()
+    
+    def _show_stats(self):
+        """Afficher les statistiques"""
+        stats = self.controller.action_service.stats
+        if stats['start_time']:
+            duration = time.time() - stats['start_time']
+            stats_text = f"""Statistiques de session:
+            
+Durée: {duration:.1f} secondes
+Détections: {stats['detections']}
+Clics exécutés: {stats['clicks']}
+Templates actifs: {len(self.controller.template_manager.get_enabled_templates())}
+Mode: {self.controller.bot_config.mode.value.upper()}"""
+        else:
+            stats_text = "Aucune session active."
+        
+        messagebox.showinfo("Statistiques", stats_text)
+    
+    def _update_status(self, message: str):
+        """Mettre à jour le statut"""
+        self.status_var.set(message)
+    
+    def _update_zone_label(self):
+        """Mettre à jour le label de la zone"""
+        if hasattr(self, 'zone_label'):
+            if self.controller.bot_config.detection_region:
+                region = self.controller.bot_config.detection_region
+                zone_text = f"Zone: {region[2]}x{region[3]} à ({region[0]},{region[1]})"
+            else:
+                zone_text = "Zone: Écran complet"
+            self.zone_label.config(text=zone_text)
+    
+    def _on_closing(self):
+        """Gestionnaire de fermeture de fenêtre"""
+        if messagebox.askokcancel("Quitter", "Voulez-vous vraiment quitter ?"):
+            self.controller.shutdown()
+            self.root.destroy()
     
     def run(self):
         """Lancer l'interface"""
-        self.root.mainloop()
+        try:
+            self.root.mainloop()
+        except KeyboardInterrupt:
+            self.controller.shutdown()
 
 # ================== MAIN ==================
 
-if __name__ == "__main__":
-    print("🤖 Pixel Bot v2.0 - Architecture Refactorisée")
+def main():
+    """Point d'entrée principal"""
+    print("🤖 Pixel Bot v3.0 - Architecture Refactorisée")
     print("=" * 60)
-    print("✨ Améliorations:")
-    print("  • Architecture modulaire avec services")
-    print("  • Système d'événements découplé")
-    print("  • Configuration centralisée")
-    print("  • Logging structuré")
-    print("  • Code maintenable et extensible")
-    print("  • Mode SHIFT + ESPACE")
+    print("✨ Améliorations v3.0:")
+    print("  • Gestion d'erreurs robuste")
+    print("  • Logging avancé avec fichiers")
+    print("  • Services avec interfaces")
+    print("  • Cache des templates optimisé")
+    print("  • Configuration validée")
+    print("  • Threads workers sécurisés")
+    print("  • Event bus thread-safe")
+    print("  • Interface graphique améliorée")
+    print("  • Capture d'écran interactive")
     print("=" * 60)
-    
-    controller = BotController()
-    gui = BotGUI(controller)
-    
-    # Thread pour exit
-    exit_thread = threading.Thread(target=lambda: keyboard.wait(Constants.HOTKEY_EXIT), daemon=True)
-    exit_thread.start()
+    print(f"📂 Dossier templates: {Path('templates').absolute()}")
+    print(f"⚙️ Fichier config: {Path('bot_config.json').absolute()}")
+    print(f"📋 Fichier log: {Path('bot.log').absolute()}")
+    print("=" * 60)
     
     try:
+        app_config = AppConfig()
+        controller = BotController(app_config)
+        gui = BotGUI(controller)
+        
+        # Thread de surveillance d'arrêt
+        def exit_monitor():
+            try:
+                keyboard.wait(app_config.HOTKEY_EXIT)
+                controller.shutdown()
+            except:
+                pass
+        
+        exit_thread = threading.Thread(target=exit_monitor, daemon=True, name="ExitMonitor")
+        exit_thread.start()
+        
+        print("🚀 Interface graphique lancée!")
+        print("=" * 60)
+        print("💡 Raccourcis clavier:")
+        print(f"  {app_config.HOTKEY_TOGGLE} - Toggle bot")
+        print(f"  {app_config.HOTKEY_STOP} - Arrêter bot")
+        print(f"  {app_config.HOTKEY_CAPTURE} - Capturer template")
+        print(f"  {app_config.HOTKEY_EXIT} - Quitter")
+        print("=" * 60)
+        
         gui.run()
-    except KeyboardInterrupt:
-        controller.stop_bot()
-        print("\n👋 Arrêt propre du bot")
+        
+    except Exception as e:
+        print(f"❌ Erreur fatale: {e}")
+        logging.exception("Erreur fatale de l'application")
+
+if __name__ == "__main__":
+    main()

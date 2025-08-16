@@ -1,0 +1,525 @@
+2025-08-15 20:53:37,022 - PixelBot - INFO - SUCCESS: Configuration charg�e: 8 templates
+2025-08-15 20:53:37,030 - PixelBot - INFO - SUCCESS: Template 'Frene' ajout�
+2025-08-15 20:53:37,031 - PixelBot - INFO - SUCCESS: Template 'Ortie' ajout�
+2025-08-15 20:53:37,032 - PixelBot - INFO - SUCCESS: Template 'Noyer' ajout�
+2025-08-15 20:53:37,033 - PixelBot - INFO - SUCCESS: Template 'chataignier_t' ajout�
+2025-08-15 20:53:37,033 - PixelBot - INFO - SUCCESS: Template 'Bl�' ajout�
+2025-08-15 20:53:37,035 - PixelBot - INFO - SUCCESS: Template 'Orge' ajout�
+2025-08-15 20:53:37,036 - PixelBot - INFO - SUCCESS: Template 'Orge2' ajout�
+2025-08-15 20:53:37,037 - PixelBot - INFO - SUCCESS: Template 'Bl�2' ajout�
+2025-08-15 20:53:42,240 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 20:53:45,488 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 20:54:22,902 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 20:54:25,222 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 20:54:36,665 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 20:54:47,928 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 20:56:20,639 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 20:56:22,755 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 20:56:35,794 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 20:56:47,053 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:07:01,677 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:07:03,689 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:07:15,315 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:07:26,366 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:07:55,458 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:07:57,270 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:08:11,507 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:08:18,940 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:10:31,508 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:10:33,519 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:10:56,701 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:11:12,470 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:11:37,050 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:13:08,722 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:13:14,446 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:13:25,200 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:13:36,130 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:48:58,194 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:48:59,601 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:49:11,656 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:49:28,120 - PixelBot - INFO - SUCCESS: Bot d�marr� en mode SHIFT
+2025-08-15 21:49:43,488 - PixelBot - INFO - SUCCESS: Bot arr�t�
+2025-08-15 21:51:03,546 - PixelBot - INFO - Arr�t de l'application
+2025-08-15 21:51:16,819 - INFO - SUCCESS: Configuration chargée: 8 templates
+2025-08-15 21:51:16,821 - INFO - SUCCESS: Template 'Frene' ajouté
+2025-08-15 21:51:16,821 - INFO - SUCCESS: Template 'Ortie' ajouté
+2025-08-15 21:51:16,822 - INFO - SUCCESS: Template 'Noyer' ajouté
+2025-08-15 21:51:16,823 - INFO - SUCCESS: Template 'chataignier_t' ajouté
+2025-08-15 21:51:16,824 - INFO - SUCCESS: Template 'Blé' ajouté
+2025-08-15 21:51:16,825 - INFO - SUCCESS: Template 'Orge' ajouté
+2025-08-15 21:51:16,826 - INFO - SUCCESS: Template 'Orge2' ajouté
+2025-08-15 21:51:16,827 - INFO - SUCCESS: Template 'Blé2' ajouté
+2025-08-15 21:51:28,774 - INFO - Positions réinitialisées
+2025-08-15 21:51:28,778 - INFO - SUCCESS: Bot démarré en mode SHIFT+ESPACE
+2025-08-15 21:51:29,066 - INFO - 10 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:29,693 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:30,275 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:30,776 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:31,331 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:31,998 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:32,694 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:33,249 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:33,926 - INFO - 7 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:34,511 - INFO - 10 cibles - En attente SHIFT + ESPACE
+2025-08-15 21:51:35,476 - INFO - SUCCESS: Bot arrêté
+2025-08-15 21:51:35,980 - INFO - Positions réinitialisées
+2025-08-15 21:51:35,980 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 21:51:36,020 - INFO - Clic sur Orge2 à (659, 205)
+2025-08-15 21:51:36,262 - INFO - Clic sur Orge2 à (694, 205)
+2025-08-15 21:51:36,553 - INFO - Clic sur Orge2 à (735, 205)
+2025-08-15 21:51:36,553 - ERROR - Erreur mouvement souris: float division by zero
+2025-08-15 21:51:36,755 - INFO - Clic sur Orge2 à (634, 157)
+2025-08-15 21:51:36,756 - ERROR - Erreur mouvement souris: float division by zero
+2025-08-15 21:51:37,058 - INFO - Clic sur Orge2 à (897, 205)
+2025-08-15 21:51:37,318 - INFO - Clic sur Orge2 à (928, 207)
+2025-08-15 21:51:37,560 - INFO - Clic sur Orge2 à (778, 615)
+2025-08-15 21:51:37,843 - INFO - Clic sur Orge2 à (735, 205)
+2025-08-15 21:51:38,121 - INFO - Clic sur Orge2 à (897, 205)
+2025-08-15 21:51:38,124 - ERROR - Erreur mouvement souris: float division by zero
+2025-08-15 21:51:38,351 - INFO - Clic sur Orge2 à (928, 207)
+2025-08-15 21:51:38,575 - INFO - Clic sur Orge2 à (778, 615)
+2025-08-15 21:51:38,860 - INFO - Clic sur Orge2 à (897, 205)
+2025-08-15 21:51:39,148 - INFO - Clic sur Orge2 à (928, 207)
+2025-08-15 21:51:39,470 - INFO - Clic sur Orge2 à (778, 615)
+2025-08-15 21:51:39,725 - INFO - Clic sur Orge2 à (928, 207)
+2025-08-15 21:51:40,061 - INFO - Clic sur Orge2 à (778, 615)
+2025-08-15 21:51:40,350 - INFO - Clic sur Orge2 à (778, 644)
+2025-08-15 21:51:40,650 - INFO - SUCCESS: Bot arrêté
+2025-08-15 21:51:48,243 - ERROR - Aucun template actif!
+2025-08-15 21:51:51,413 - INFO - Positions réinitialisées
+2025-08-15 21:51:51,414 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 21:51:55,705 - INFO - SUCCESS: Bot arrêté
+2025-08-15 21:52:23,741 - INFO - Template 'Frene' supprimé
+2025-08-15 21:52:24,838 - INFO - Template 'Ortie' supprimé
+2025-08-15 21:52:25,572 - INFO - Template 'Noyer' supprimé
+2025-08-15 21:52:26,164 - INFO - Template 'chataignier_t' supprimé
+2025-08-15 21:52:26,773 - INFO - Template 'Blé' supprimé
+2025-08-15 21:52:27,478 - INFO - Template 'Orge' supprimé
+2025-08-15 21:52:31,702 - INFO - Template 'Orge2' supprimé
+2025-08-15 21:53:54,660 - INFO - Sélection de zone de détection
+2025-08-15 21:53:54,661 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:53:57,966 - WARNING - Sélection annulée
+2025-08-15 21:53:59,456 - INFO - Mode capture - Interface graphique
+2025-08-15 21:53:59,456 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:54:04,551 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215404.png
+2025-08-15 21:54:04,552 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215404.png
+2025-08-15 21:54:09,350 - INFO - SUCCESS: Template 'Mineur' ajouté
+2025-08-15 21:54:13,887 - INFO - Template 'Blé2' supprimé
+2025-08-15 21:54:22,302 - INFO - Sélection de zone de détection
+2025-08-15 21:54:22,303 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:54:25,715 - INFO - SUCCESS: Zone définie: 1254x851 à (407,79)
+2025-08-15 21:54:27,163 - INFO - Positions réinitialisées
+2025-08-15 21:54:27,164 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 21:54:27,377 - INFO - Clic sur Mineur à (1083, 621)
+2025-08-15 21:54:27,704 - INFO - Clic sur Mineur à (1070, 213)
+2025-08-15 21:54:41,344 - INFO - Mode capture - Interface graphique
+2025-08-15 21:54:41,345 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:54:50,430 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215450.png
+2025-08-15 21:54:50,431 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215450.png
+2025-08-15 21:54:56,544 - INFO - SUCCESS: Template 'cuivre' ajouté
+2025-08-15 21:54:57,243 - INFO - Clic sur cuivre à (617, 482)
+2025-08-15 21:55:11,055 - INFO - SUCCESS: Bot arrêté
+2025-08-15 21:55:11,096 - INFO - Positions réinitialisées
+2025-08-15 21:55:11,097 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 21:55:46,239 - INFO - SUCCESS: Configuration sauvegardée
+2025-08-15 21:57:21,479 - INFO - SUCCESS: Bot arrêté
+2025-08-15 21:57:23,782 - INFO - Mode capture - Interface graphique
+2025-08-15 21:57:23,784 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:57:29,092 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215729.png
+2025-08-15 21:57:29,092 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215729.png
+2025-08-15 21:57:32,597 - INFO - SUCCESS: Template 'Bronze' ajouté
+2025-08-15 21:57:36,972 - INFO - Mode capture - Interface graphique
+2025-08-15 21:57:36,973 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:57:42,640 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215742.png
+2025-08-15 21:57:42,640 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215742.png
+2025-08-15 21:57:46,715 - INFO - SUCCESS: Template 'Kobalt' ajouté
+2025-08-15 21:57:49,672 - INFO - Sélection de zone de détection
+2025-08-15 21:57:49,674 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:57:53,238 - INFO - SUCCESS: Zone définie: 47x38 à (1018,519)
+2025-08-15 21:57:56,508 - INFO - Mode capture - Interface graphique
+2025-08-15 21:57:56,509 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:57:59,585 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215759.png
+2025-08-15 21:57:59,586 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215759.png
+2025-08-15 21:58:02,818 - ERROR - Erreur ajout template: Template 'Bronze' existe déjà
+2025-08-15 21:58:05,576 - INFO - Sélection de zone de détection
+2025-08-15 21:58:05,578 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:58:09,226 - INFO - SUCCESS: Zone définie: 45x44 à (1017,515)
+2025-08-15 21:58:11,444 - INFO - Mode capture - Interface graphique
+2025-08-15 21:58:11,446 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:58:14,811 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215814.png
+2025-08-15 21:58:14,812 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215814.png
+2025-08-15 21:58:17,780 - INFO - SUCCESS: Template 'Bronze2' ajouté
+2025-08-15 21:58:19,767 - INFO - Mode capture - Interface graphique
+2025-08-15 21:58:19,768 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:58:23,001 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215822.png
+2025-08-15 21:58:23,003 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215822.png
+2025-08-15 21:58:25,719 - ERROR - Erreur ajout template: Template 'Bronze' existe déjà
+2025-08-15 21:58:33,083 - INFO - Mode capture - Interface graphique
+2025-08-15 21:58:33,084 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:58:36,102 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215836.png
+2025-08-15 21:58:36,103 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215836.png
+2025-08-15 21:58:39,477 - INFO - SUCCESS: Template 'Kobalt2' ajouté
+2025-08-15 21:58:43,669 - INFO - Positions réinitialisées
+2025-08-15 21:58:43,671 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 21:59:02,466 - INFO - Mode capture - Interface graphique
+2025-08-15 21:59:02,467 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:59:06,203 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215906.png
+2025-08-15 21:59:06,203 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215906.png
+2025-08-15 21:59:11,817 - INFO - SUCCESS: Template 'Kobalt3' ajouté
+2025-08-15 21:59:11,999 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:12,258 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:12,580 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:13,025 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:13,328 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:13,657 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:14,060 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:14,280 - INFO - Mode capture - Interface graphique
+2025-08-15 21:59:14,280 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:59:14,514 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:14,762 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:15,113 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:15,414 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:15,766 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:16,209 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:16,491 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:16,778 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:17,145 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:17,414 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:17,777 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:18,243 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215918.png
+2025-08-15 21:59:18,243 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215918.png
+2025-08-15 21:59:18,245 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:18,580 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:19,011 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:19,313 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:19,741 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:20,092 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:20,440 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:20,840 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:21,208 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:21,593 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:21,596 - INFO - SUCCESS: Template 'Kobalt4' ajouté
+2025-08-15 21:59:21,865 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:22,176 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:22,529 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:22,939 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:23,083 - INFO - Mode capture - Interface graphique
+2025-08-15 21:59:23,083 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:59:23,382 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:23,747 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:24,057 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:24,324 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:24,709 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:25,107 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:25,354 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:25,692 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:26,121 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:26,438 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:26,675 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215926.png
+2025-08-15 21:59:26,676 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215926.png
+2025-08-15 21:59:26,745 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:27,093 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:27,368 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:27,816 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:28,144 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:28,559 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:28,927 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:29,195 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:29,455 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:29,804 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:29,997 - INFO - SUCCESS: Template 'Kobalt5' ajouté
+2025-08-15 21:59:30,223 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:30,492 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:30,924 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:31,361 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:31,792 - INFO - Mode capture - Interface graphique
+2025-08-15 21:59:31,792 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:59:31,804 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:32,082 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:32,525 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:32,838 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:33,254 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:33,674 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:34,040 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:34,381 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:34,651 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:34,918 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:35,105 - INFO - SUCCESS: Zone capturée: templates/template_20250815_215935.png
+2025-08-15 21:59:35,105 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_215935.png
+2025-08-15 21:59:35,336 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:35,616 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:35,958 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:36,271 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:36,667 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:36,931 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:37,366 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:37,701 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:38,000 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:38,453 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:38,899 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:39,197 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:39,224 - ERROR - Erreur ajout template: Template 'Kobalt5' existe déjà
+2025-08-15 21:59:39,634 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:39,925 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:40,355 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:40,772 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:41,168 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:41,565 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:41,916 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:42,330 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:42,664 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:42,997 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:43,265 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:43,563 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:43,834 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:44,132 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:44,560 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:44,907 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:45,236 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:45,522 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:45,836 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:46,140 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:46,422 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:46,689 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:47,131 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:47,486 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:47,490 - INFO - Clic sur cuivre à (1048, 540)
+2025-08-15 21:59:47,841 - INFO - Clic sur Bronze2 à (1040, 537)
+2025-08-15 21:59:47,913 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:48,147 - INFO - Clic sur Kobalt4 à (1041, 539)
+2025-08-15 21:59:48,227 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:48,583 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:48,928 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:49,372 - ERROR - Erreur détection template Kobalt3: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1179: error: (-215:Assertion failed) _img.size().height <= _templ.size().height && _img.size().width <= _templ.size().width in function 'cv::matchTemplate'
+
+2025-08-15 21:59:49,734 - INFO - SUCCESS: Bot arrêté
+2025-08-15 21:59:52,987 - INFO - Sélection de zone de détection
+2025-08-15 21:59:52,988 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 21:59:59,866 - INFO - SUCCESS: Zone définie: 1462x990 à (231,67)
+2025-08-15 22:00:18,341 - INFO - SUCCESS: Configuration sauvegardée
+2025-08-15 22:00:21,402 - INFO - Positions réinitialisées
+2025-08-15 22:00:21,403 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 22:00:44,364 - INFO - SUCCESS: Bot arrêté
+2025-08-15 22:00:52,279 - INFO - Mode capture - Interface graphique
+2025-08-15 22:00:52,279 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:00:55,761 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220055.png
+2025-08-15 22:00:55,763 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220055.png
+2025-08-15 22:01:00,132 - INFO - SUCCESS: Template 'Bronze3' ajouté
+2025-08-15 22:01:03,165 - INFO - Mode capture - Interface graphique
+2025-08-15 22:01:03,166 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:01:06,626 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220106.png
+2025-08-15 22:01:06,627 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220106.png
+2025-08-15 22:01:18,765 - INFO - SUCCESS: Template 'Bronze4' ajouté
+2025-08-15 22:01:25,128 - INFO - Mode capture - Interface graphique
+2025-08-15 22:01:25,129 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:01:29,016 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220128.png
+2025-08-15 22:01:29,016 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220128.png
+2025-08-15 22:01:33,017 - INFO - SUCCESS: Template 'Bronze5' ajouté
+2025-08-15 22:01:36,605 - INFO - Positions réinitialisées
+2025-08-15 22:01:36,606 - INFO - SUCCESS: Bot démarré en mode AUTO
+2025-08-15 22:01:52,497 - INFO - Clic sur Kobalt à (1029, 661)
+2025-08-15 22:01:52,880 - INFO - Clic sur Kobalt3 à (1028, 662)
+2025-08-15 22:01:52,887 - ERROR - Erreur mouvement souris: PyAutoGUI fail-safe triggered from mouse moving to a corner of the screen. To disable this fail-safe, set pyautogui.FAILSAFE to False. DISABLING FAIL-SAFE IS NOT RECOMMENDED.
+2025-08-15 22:01:52,889 - ERROR - Erreur clic: PyAutoGUI fail-safe triggered from mouse moving to a corner of the screen. To disable this fail-safe, set pyautogui.FAILSAFE to False. DISABLING FAIL-SAFE IS NOT RECOMMENDED.
+2025-08-15 22:02:07,893 - INFO - SUCCESS: Bot arrêté
+2025-08-15 22:02:12,507 - INFO - Mode capture - Interface graphique
+2025-08-15 22:02:12,508 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:02:16,265 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220216.png
+2025-08-15 22:02:16,266 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220216.png
+2025-08-15 22:02:25,074 - INFO - SUCCESS: Template 'Kobalt7' ajouté
+2025-08-15 22:02:31,879 - INFO - Mode capture - Interface graphique
+2025-08-15 22:02:31,880 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:02:34,731 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220234.png
+2025-08-15 22:02:34,732 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220234.png
+2025-08-15 22:02:38,249 - INFO - SUCCESS: Template 'Kobalt6' ajouté
+2025-08-15 22:02:42,115 - INFO - Mode capture - Interface graphique
+2025-08-15 22:02:42,116 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:02:46,444 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220246.png
+2025-08-15 22:02:46,445 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220246.png
+2025-08-15 22:02:49,426 - INFO - SUCCESS: Template 'Kobalt8' ajouté
+2025-08-15 22:02:50,992 - INFO - Mode capture - Interface graphique
+2025-08-15 22:02:50,993 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:02:58,287 - INFO - SUCCESS: Zone capturée: templates/template_20250815_220258.png
+2025-08-15 22:02:58,288 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_220258.png
+2025-08-15 22:03:01,834 - INFO - SUCCESS: Template 'Kobalt10' ajouté
+2025-08-15 22:06:02,276 - INFO - Arrêt de l'application
+2025-08-15 22:06:32,096 - INFO - SUCCESS: Configuration chargée: 9 templates
+2025-08-15 22:06:32,097 - INFO - SUCCESS: Template 'Mineur' ajouté
+2025-08-15 22:06:32,098 - INFO - SUCCESS: Template 'cuivre' ajouté
+2025-08-15 22:06:32,099 - INFO - SUCCESS: Template 'Bronze' ajouté
+2025-08-15 22:06:32,101 - INFO - SUCCESS: Template 'Kobalt' ajouté
+2025-08-15 22:06:32,102 - INFO - SUCCESS: Template 'Bronze2' ajouté
+2025-08-15 22:06:32,103 - INFO - SUCCESS: Template 'Kobalt2' ajouté
+2025-08-15 22:06:32,104 - INFO - SUCCESS: Template 'Kobalt3' ajouté
+2025-08-15 22:06:32,105 - INFO - SUCCESS: Template 'Kobalt4' ajouté
+2025-08-15 22:06:32,106 - INFO - SUCCESS: Template 'Kobalt5' ajouté
+2025-08-15 22:08:31,906 - INFO - Arrêt de l'application
+2025-08-15 22:08:35,694 - INFO - SUCCESS: Configuration chargée: 0 ressources
+2025-08-15 22:09:19,458 - INFO - Arrêt de l'application
+2025-08-15 22:09:22,659 - INFO - SUCCESS: Configuration chargée: 0 ressources
+2025-08-15 22:09:42,707 - INFO - Arrêt de l'application
+2025-08-15 22:10:04,220 - INFO - SUCCESS: Configuration chargée: 9 templates
+2025-08-15 22:10:04,222 - INFO - SUCCESS: Template 'Mineur' ajouté
+2025-08-15 22:10:04,223 - INFO - SUCCESS: Template 'cuivre' ajouté
+2025-08-15 22:10:04,224 - INFO - SUCCESS: Template 'Bronze' ajouté
+2025-08-15 22:10:04,225 - INFO - SUCCESS: Template 'Kobalt' ajouté
+2025-08-15 22:10:04,226 - INFO - SUCCESS: Template 'Bronze2' ajouté
+2025-08-15 22:10:04,228 - INFO - SUCCESS: Template 'Kobalt2' ajouté
+2025-08-15 22:10:04,228 - INFO - SUCCESS: Template 'Kobalt3' ajouté
+2025-08-15 22:10:04,229 - INFO - SUCCESS: Template 'Kobalt4' ajouté
+2025-08-15 22:10:04,230 - INFO - SUCCESS: Template 'Kobalt5' ajouté
+2025-08-15 22:10:08,863 - INFO - Arrêt de l'application
+2025-08-15 22:10:24,913 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215404.png
+2025-08-15 22:10:24,913 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215450.png
+2025-08-15 22:10:24,914 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215729.png
+2025-08-15 22:10:24,914 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215742.png
+2025-08-15 22:10:24,914 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215814.png
+2025-08-15 22:10:24,915 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215836.png
+2025-08-15 22:10:24,915 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215906.png
+2025-08-15 22:10:24,915 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215918.png
+2025-08-15 22:10:24,916 - WARNING - Template ignoré (fichier manquant): templates/template_20250815_215926.png
+2025-08-15 22:10:24,916 - INFO - SUCCESS: Configuration chargée: 0 templates
+2025-08-15 22:10:28,927 - INFO - Arrêt de l'application
+2025-08-15 22:22:29,855 - INFO - SUCCESS: Configuration chargée: 9 templates
+2025-08-15 22:22:29,857 - INFO - SUCCESS: Template 'Mineur' ajouté
+2025-08-15 22:22:29,858 - INFO - SUCCESS: Template 'cuivre' ajouté
+2025-08-15 22:22:29,860 - INFO - SUCCESS: Template 'Bronze' ajouté
+2025-08-15 22:22:29,860 - INFO - SUCCESS: Template 'Kobalt' ajouté
+2025-08-15 22:22:29,861 - INFO - SUCCESS: Template 'Bronze2' ajouté
+2025-08-15 22:22:29,862 - INFO - SUCCESS: Template 'Kobalt2' ajouté
+2025-08-15 22:22:29,863 - INFO - SUCCESS: Template 'Kobalt3' ajouté
+2025-08-15 22:22:29,865 - INFO - SUCCESS: Template 'Kobalt4' ajouté
+2025-08-15 22:22:29,867 - INFO - SUCCESS: Template 'Kobalt5' ajouté
+2025-08-15 22:22:40,682 - INFO - Mode capture - Interface graphique
+2025-08-15 22:22:40,686 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:22:45,266 - INFO - SUCCESS: Zone capturée: templates/template_20250815_222245.png
+2025-08-15 22:22:45,284 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_222245.png
+2025-08-15 22:22:47,647 - INFO - SUCCESS: Template 'cuivre 1' ajouté
+2025-08-15 22:22:54,856 - INFO - Mode capture - Interface graphique
+2025-08-15 22:22:54,858 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:22:56,441 - INFO - SUCCESS: Zone capturée: templates/template_20250815_222256.png
+2025-08-15 22:22:56,443 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_222256.png
+2025-08-15 22:22:59,843 - INFO - SUCCESS: Template 'cuivre 2' ajouté
+2025-08-15 22:23:20,094 - INFO - Template 'cuivre 1' supprimé
+2025-08-15 22:23:24,610 - INFO - Template 'cuivre 2' supprimé
+2025-08-15 22:23:26,648 - INFO - Template 'Mineur' supprimé
+2025-08-15 22:23:28,118 - INFO - Template 'cuivre' supprimé
+2025-08-15 22:23:28,829 - INFO - Template 'Bronze' supprimé
+2025-08-15 22:23:29,617 - INFO - Template 'Kobalt' supprimé
+2025-08-15 22:23:30,300 - INFO - Template 'Bronze2' supprimé
+2025-08-15 22:23:30,954 - INFO - Template 'Kobalt2' supprimé
+2025-08-15 22:23:31,616 - INFO - Template 'Kobalt3' supprimé
+2025-08-15 22:23:32,232 - INFO - Template 'Kobalt4' supprimé
+2025-08-15 22:23:32,917 - INFO - Template 'Kobalt5' supprimé
+2025-08-15 22:23:37,562 - INFO - SUCCESS: Configuration sauvegardée
+2025-08-15 22:23:46,935 - INFO - Mode capture - Interface graphique
+2025-08-15 22:23:46,936 - INFO - Sélection de zone - Interface graphique activée
+2025-08-15 22:23:49,432 - INFO - SUCCESS: Zone capturée: templates/template_20250815_222349.png
+2025-08-15 22:23:49,432 - INFO - SUCCESS: Template sauvegardé: templates/template_20250815_222349.png
+2025-08-15 22:23:54,434 - INFO - Arrêt de l'application
