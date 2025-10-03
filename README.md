@@ -9,3 +9,5 @@ UI modulaire :
     Temps d'attente entre les actions ajustable
 
 Lors de la capture d'ecran il faut figer l'ecran car quand on survol l'apparance change.
+
+Corriger l'erreur de division par zero lors du deplacement de la souris
